@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.2, user-scalable=no" />
+
+  <title>Timeline-ChronoDB</title>
+  <script src="
+https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
+"></script>
+  <!-- <script src="/lib/vis.min.js"></script> -->
+  <link href="https://unpkg.com/vis/dist/vis.min.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/vis/dist/vis-timeline-graph2d.min.css" rel="stylesheet"/>
+
+  <script type="text/javascript" src="https://unpkg.com/vis/dist/vis.min.js" rel="script"> </script>
+
+
+  <link href="/styles/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/lib/tabulator.min.js"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script src="/lib/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <link href="/styles/index.css" rel="stylesheet"/>
+  <!-- https://quilljs.com/docs/quickstart/ -->
+  <!-- https://atomiks.github.io/tippyjs/v6/getting-started -->
+  <!-- https://unpkg.com/vis@0.5.1/docs/timeline.html -->
+  <!-- https://www.daterangepicker.com/ -->
+</head>
+<style>
+  @font-face {
+    font-family: "nanumB";
+    src: url("./font/NanumSquareB.ttf");
+}  @font-face {
+    font-family: "nanumEB";
+    src: url("./font/NanumSquareEB.ttf");
+}
+</style>
+<body class="bg-light">
+  
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">ChronoDB</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link " onclick="Timeline()">Timeline</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" onclick="Table()">Table</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" onclick="openEdit()">Add</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <section id="section-databases" class="container">
+      <div id="databases-container" class="list-group">
+        <!-- <a href="?db=1" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">List group item heading</h5>
+          </div>
+          <small>Donec id elit non mi porta.</small>
+        </a> -->
+    </div>
+  </section>
+
+  <section id="section-timeline" class="hidden">
+    <div id="timeline-container"></div>
+  </section>
+  <section id="section-table" class="hidden" class="container">
+    <div id="table-container"></div>
+  </section>
+ 
+  
+  <div id="emojiwindow" class="hidden">
+    <img src="shuffle.svg" id="shuffle-emoji"> 
+    <emoji-picker></emoji-picker>
+  </div>
+  <div id="editwindow" class="hidden">
+    <section id="section-input" class="container">
+      <br>
+      <h2 style="text-align: center;">Add Event</h2>
+      <div class="inputitem" >
+        <button id="pickemoji"><img src="smile.svg"></button>
+      </div>
+        <div class="row">
+  
+          <div class="inputitem">
+            <label for="nameinput" class="visually-hidden">Name</label>
+            <input type="text" class="form-control" id="nameinput" placeholder="Name">
+          </div>
+          <select class="form-select inputitem" id="typeinput" aria-label="Default select example">
+            <option disabled>Select type</option>
+            <option value="1"selected>Event</option>
+            <option value="2">Period</option>
+          </select>
+  
+          <div class="dropdown inputitem">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="color-selection-span" id="color-selection-current" style="background:white;margin: 1px;"></span>select color
+            </button>
+            <div  class="dropdown-menu">
+              <div  id="color-selection"></div>
+            </div>
+            <!-- <ul class="dropdown-menu" id="color-selection">
+              <li class="dropdown-item color-item">23</li>
+            </ul> -->
+          </div>
+          
+          <div class="inputitem">
+            <input class="form-control" type="file" id="formFile">
+          </div>
+          <div class="inputitem">
+  
+            <label for="start">Start date:</label>
+            <input name="date" id="startinput"
+                   min="0000-01-01" max="2999-12-31">
+          </div>
+          <div class="inputitem">
+  
+            <label for="start">End date:</label>
+            <input name="date" id="endinput"
+                   min="0000-01-01" max="2999-12-31">
+          </div>
+          
+        </div>
+  
+        <div class="form-check inputitem">
+          <input class="form-check-input" type="checkbox" value="" id="useemoji" checked>
+          <label class="form-check-label" for="useemoji">
+            Use emoji thumbnail
+          </label>
+        </div>
+        <div class="inputitem" style="width: 200px;"> 
+          <label for="importance" id="importance-label" class="form-label">Importance:5</label>
+          <input type="range" id="importance-range" class="form-range" min="1" max="10"  id="importance" value="5">
+  
+        </div>
+        <div class="row">
+          <div id="tagarea">
+            <!-- <div class="tag-selection selected"><img src="check.png">tag1</div>
+            <div class="tag-selection"><img src="check.png">tag2</div>
+            <div class="tag-selection selected"><img src="check.png">tag3</div> -->
+          </div>
+        </div>
+        <div id="editor-container" class="col-auto">
+  
+          <div id="editor">
+            
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col-auto">
+  
+            <button class="btn btn-primary " id="submit-event">Create</button>
+          </div>
+        </div>
+  
+  
+  
+    </section>
+  </div>
+  <div id="shadow" class="hidden"></div>
+</body>
+<!-- <script src="./js/example.js"></script> -->
+<script src="/js/emoji.js"></script>
+
+<script src="/js/index.js"></script>
+
+</html>
