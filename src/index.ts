@@ -1,8 +1,9 @@
 import { createServer } from "http"
 import fs = require("fs")
-
+import { Event } from "./repository" 
 import express = require("express")
-import { addEvent, countEvent, deleteEvent, getAllDB, getAllEvents, getAllTags } from "./repository"
+import { addEvent, countEvent, deleteEvent, editEvent, getAllDB, getAllEvents, getAllTags } from "./repository"
+import { ImageUploader } from "./mutler"
 const clientPath = `${__dirname}/../public`
 // const firstpage = fs.readFileSync(clientPath+"/index.html", "utf8")
 
@@ -45,18 +46,34 @@ app.get("/db/:id/tags", async function (req: any, res: any) {
 	res.status(200).json({ items: row })
 })
 
-app.post("/db/:id/event", async function (req: any, res: any) {
+app.post("/db/:id/event", ImageUploader.upload.single("img"),async function (req: any, res: any) {
+	const imgfile = req.file
+	console.log(imgfile.filename)
+	console.log(req.body)
 	let id = req.params.id
-    console.log(req.body)
-    console.log(id)
-    const result =await addEvent(id,req.body)
-    if (!result) res.status(500).end()
-	res.status(200).end()
+	if(imgfile)
+		req.body.thumbnail=imgfile.filename
+
+    const result =await addEvent(id,req.body as Event)
+    if (!result) return res.status(500).end()
+	return res.status(200).end()
 })
-app.delete("/db/:id/event", async function (req: any, res: any) {
+app.post("/db/event/:id/delete", async function (req: any, res: any) {
 	let id = req.params.id
 	
     const result =await deleteEvent(id)
+    if (!result) res.status(500).end()
+	res.status(200).end()
+})
+
+app.post("/db/event/:id/edit", ImageUploader.upload.single("img"), async function (req: any, res: any) {
+	let id = req.params.id
+	const imgfile = req.file
+	
+	if(imgfile){
+		req.body.thumbnail=imgfile.filename
+	}
+    const result =await editEvent(id,req.body as Event)
     if (!result) res.status(500).end()
 	res.status(200).end()
 })

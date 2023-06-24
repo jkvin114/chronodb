@@ -155,10 +155,12 @@ background-color: red;
 
 .eventimg{
     /* width: 20px; */
-    height: 25px;
+    margin: -2px;
+    height: 20px;
     margin-right: 3px;
     margin-left: 3px;
     background: transparent;
+    
 }.eventemoji{
     /* font-size: 17px; */
     background: transparent;
@@ -221,6 +223,13 @@ background-color: red;
 .imp-9,.imp-10{
     font-size: 0.85em;
 }
+.imp-4 .eventimg,.imp-5 .eventimg,.imp-6 .eventimg,.imp-7 .eventimg{
+    height: 22px;
+}
+.imp-8 .eventimg,.imp-9 .eventimg,.imp-10 .eventimg{
+    height: 24px;
+}
+
 
 .edit-item{
     width: 24px;
@@ -370,8 +379,8 @@ border-bottom: 1px solid #bebebe;
     width: min-content;
 }
 #tagarea{
-    width: 90%;
-    margin-left: 5%;
+    /* width: 90%; */
+    /* margin-left: 5%; */
     min-height: 50px;
     border-radius: 20px;
     border: 2px solid #969696;
@@ -382,6 +391,18 @@ border-bottom: 1px solid #bebebe;
     /* padding-top: 10px; */
     align-content: center;  
 }
+#thumbnail{
+    margin: 4px;
+    max-height: 120px;
+    max-width: 250px;
+    overflow: auto;
+    cursor: pointer;
+}
+#thumbnail > img{
+    /* width: 100%; */
+    height: 100%;
+}
+
 .tag-selection{
     font-size: 15px;
     border-radius: 5px;
@@ -414,14 +435,31 @@ border-bottom: 1px solid #bebebe;
 #databases-container{
     margin-top: 30px;
 }
-#shuffle-emoji{
+emoji-picker{
+    
+    box-shadow:rgb(47, 47, 47) 0px 0px 3px 1px;
+
+}
+.emoji-window-btn{
+    float: right;
     width: 30px;
+    font-size: 17px;
+    height: 30px;
     background-color: white;
     padding: 3px;
     cursor: pointer;
-    margin: 2px;
+    margin-left: 3px;
+    margin: 0px;
+    border: 1px solid #969696;
+    box-shadow:rgb(47, 47, 47) 0px 0px 3px 1px;
+
 }
-#shuffle-emoji:hover{
+.emoji-window-btn > img{
+    height: 25px;
+    opacity: 0.5;
+    vertical-align: super;
+}
+.emoji-window-btn:hover{
     background-color: #969696;
 }
 #emojiwindow{

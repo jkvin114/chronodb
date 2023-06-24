@@ -23,7 +23,6 @@ export function getAllDB() {
 			resolve(row)
 		})
 	})
-
 }
 export function getAllTags(dbid: string) {
 	const queryString = "SELECT * FROM tag WHERE dbid = ?"
@@ -53,7 +52,6 @@ export function countEvent(id: string) {
 			resolve(row)
 		})
 	})
-
 }
 
 export function getAllEvents(id: string) {
@@ -69,31 +67,84 @@ export function getAllEvents(id: string) {
 			resolve(row)
 		})
 	})
-
 }
-function timestamp(){
-  return new Date().toISOString().slice(0,19).replace("T"," ")
+function timestamp() {
+	return new Date().toISOString().slice(0, 19).replace("T", " ")
 }
-export function addEvent(dbid:number,event:Event) {
-	const queryString = "INSERT INTO event (eventname,eventdesc,eventstart,eventend,emoji,thumbnail,color,isPeriod,tags,importance,dbid,createdAt,updatedAt,desctext) "+
-    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
+export function addEvent(dbid: number, event: Event) {
+	const queryString =
+		"INSERT INTO event (eventname,eventdesc,eventstart,eventend,emoji,thumbnail,color,isPeriod,tags,importance,dbid,createdAt,updatedAt,desctext,emojiThumbnail) " +
+		"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
 
 	return new Promise((resolve) => {
-		db.query(queryString, [event.eventname,event.eventdesc,event.eventstart,event.eventend,event.emoji,event.thumbnail,event.color,
-        event.isPeriod,event.tags,event.importance,dbid,timestamp(),timestamp(),event.desctext], (err, result) => {
-			if (err) {
-				console.error(err)
-				resolve(null)
+		db.query(
+			queryString,
+			[
+				event.eventname,
+				event.eventdesc,
+				event.eventstart,
+				event.eventend,
+				event.emoji,
+				event.thumbnail,
+				event.color,
+				event.isPeriod,
+				event.tags,
+				event.importance,
+				dbid,
+				timestamp(),
+				timestamp(),
+				event.desctext,
+				event.emojiThumbnail
+			],
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					resolve(null)
+				}
+				const row = <OkPacket>result
+				resolve(row)
 			}
-			const row = <OkPacket>result
-			resolve(row)
-		})
+		)
 	})
 }
+export function editEvent(id: number, event: Event) {
+	const queryString =
+		"UPDATE event SET emojiThumbnail = ?, eventname = ?,eventdesc = ?,eventstart = ?,eventend = ?,emoji = ?,thumbnail = ?,color = ?,isPeriod = ?,tags = ?,importance = ?,updatedAt = ?,desctext = ? " +
+		"WHERE (counter = ?);"
 
-export function deleteEvent(id:number){
-    const queryString="DELETE FROM event WHERE (counter = ?)"
-    return new Promise((resolve) => {
+	return new Promise((resolve) => {
+		db.query(
+			queryString,
+			[
+				event.emojiThumbnail,
+				event.eventname,
+				event.eventdesc,
+				event.eventstart,
+				event.eventend,
+				event.emoji,
+				event.thumbnail,
+				event.color,
+				event.isPeriod,
+				event.tags,
+				event.importance,
+				timestamp(),
+				event.desctext,
+				id,
+			],
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					resolve(null)
+				}
+				const row = <OkPacket>result
+				resolve(row)
+			}
+		)
+	})
+}
+export function deleteEvent(id: number) {
+	const queryString = "DELETE FROM event WHERE (counter = ?)"
+	return new Promise((resolve) => {
 		db.query(queryString, [id], (err, result) => {
 			if (err) {
 				console.error(err)
@@ -104,17 +155,17 @@ export function deleteEvent(id:number){
 		})
 	})
 }
-interface Event {
-
+export interface Event {
 	eventname: string
 	eventdesc?: string
 	eventstart: string
 	eventend?: string
 	emoji?: string
-    thumbnail?:string
-    color:string
-    isPeriod:number
-    tags:string
-    importance?:number
-    desctext:string
+	thumbnail?: string
+	color: string
+	isPeriod: number
+	tags: string
+	importance?: number
+	desctext: string
+	emojiThumbnail:number
 }

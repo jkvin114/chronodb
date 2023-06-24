@@ -65,11 +65,18 @@ const VIEW = {
 class Database {
 	constructor() {
 		this.data = []
+		this.datamap=new Map()  // id=>data
 		this.isRecent = false //caching
 		this.visualize_importance = true
 		this.id = 1
 		this.tags = []
 		this.view = VIEW.Timeline
+	}
+	setData(data){
+		this.data=data
+		for(const d of data){
+			this.datamap.set(d.counter,d)
+		}
 	}
 
 	reload() {
@@ -167,9 +174,11 @@ async function dbList() {
 
 function closeEdit(){
     $("#emojiwindow").addClass("hidden")
-        $("#editwindow").addClass("hidden")
-		$("#shadow").addClass("hidden")
-		$("body").css("overflow", "auto")
+	$("#editwindow").addClass("hidden")
+	$("#shadow").addClass("hidden")
+	$("body").css("overflow", "auto")
+	$("#thumbnail").html("")
+	$("#input-image").val(null)
 }
 
 function openEdit(id){
@@ -177,8 +186,47 @@ function openEdit(id){
 
     if(id!==undefined){
         $("#editwindow h2").html("Edit Event")
+		$("#submit-event-edit").show()
+		$("#submit-event-edit").data("id",id)
+		$("#submit-event").hide()
+		const data=DB.datamap.get(id)
+		if(!data) return
+		$("#nameinput").val(data.eventname)
+		$("#startinput").val(data.eventstart.slice(0,10))
+		if(data.eventend) $("#endinput").val(data.eventend.slice(0,10))
+		if(data.emoji){
+			$("#pickemoji").data("emoji",data.emoji)
+			$("#pickemoji").html(data.emoji)
+			$("#preview-emoji").html(data.emoji)
+		}
+		$("#importance-range").val(data.importance)
+		$("#importance-label").html("Importance:" + data.importance)
+
+		if(data.color!==undefined){
+			$("#color-selection").data("color",data.color)
+			$(".ql-toolbar").css("background", COLORS_LIGHT[Number(data.color)])
+			$("#color-selection-current").css("background", COLORS_LIGHT[Number(data.color)])
+		}
+		console.log(data.eventdesc)
+		if(data.eventdesc){
+			quill.setContents(data.eventdesc)
+		}
+		if(data.thumbnail){
+			$("#thumbnail").html("<img src='./uploads/"+data.thumbnail+"'>")
+		}
+		$("#useemoji").prop("checked",data.emojiThumbnail===1)
+		if(data.isPeriod){
+			$("#type-period").prop("selected",true)
+			$("#type-event").prop("selected",false)
+		}
+		else{
+			$("#type-period").prop("selected",false)
+			$("#type-event").prop("selected",true)
+		}
     }
     else{
+		$("#submit-event-edit").hide()
+		$("#submit-event").show()
         $("#editwindow h2").html("Add New Event")
     }
     $("#editwindow").removeClass("hidden")
@@ -215,8 +263,9 @@ $("document").ready(function () {
 	document.querySelector("emoji-picker").addEventListener("emoji-click", (event) => {
 		$("#pickemoji").html(event.detail.unicode)
 		$("#pickemoji").data("emoji", event.detail.unicode)
+		$("#preview-emoji").html(event.detail.unicode)
 		console.log(event.detail)
-		$("#emojiwindow").addClass("hidden")
+		// $("#emojiwindow").addClass("hidden")
 		//$("#shadow").toggleClass("hidden")
 		//$("body").css("overflow", "auto")
 	})
@@ -224,18 +273,21 @@ $("document").ready(function () {
 		let emoji = getRandomEmoji()
 		$("#pickemoji").html(emoji)
 		$("#pickemoji").data("emoji", emoji)
-		console.log(emoji)
+		$("#preview-emoji").html(emoji)
+	})
+	$("#remove-emoji").click(function () {
+		$("#pickemoji").html('<img src="smile.svg">')
+		$("#pickemoji").data("emoji", null)
+	})
+	
+	$("#close-emoji").click(function () {
 		$("#emojiwindow").addClass("hidden")
-	//	$("#shadow").toggleClass("hidden")
-	//	$("body").css("overflow", "auto")
 	})
 
 	$("#pickemoji").click(function (e) {
-		$("#emojiwindow").removeClass("hidden")
-	//	$("#shadow").addClass("hidden")
-	//	$("body").css("overflow", "hidden")
 		e.stopPropagation()
 		e.preventDefault()
+		$("#emojiwindow").removeClass("hidden")
 	})
 	$("#shadow").click(function (e) {
 		closeEdit()
@@ -262,7 +314,12 @@ $("document").ready(function () {
 	$("#importance-range").on("input change", function () {
 		$("#importance-label").html("Importance:" + $(this).val())
 	})
-	$("#submit-event").click(createEvent)
+	$("#submit-event").click(()=>createEvent())
+	$("#submit-event-edit").click(function(){
+		createEvent($(this).data("id"))
+	})
+	$("#cancel-event").click(closeEdit)
+
 	$(function () {
 		$('input[name="date"]').daterangepicker(
 			{
@@ -287,9 +344,27 @@ $("document").ready(function () {
 	$('input[name="date"]').on("cancel.daterangepicker", function (ev, picker) {
 		$(this).val("")
 	})
+
+
+	const inputImage = document.getElementById("input-image")
+	inputImage.addEventListener("change", e => {
+	  let input=e.target
+	  if(input.files && input.files[0]) {
+		  // 이미지 파일인지 검사 (생략)
+		  // FileReader 인스턴스 생성
+		  const reader = new FileReader()
+		  // 이미지가 로드가 된 경우
+		  reader.onload = e => {
+			$("#thumbnail").html("<img src='"+e.target.result+"'>")
+		  }
+		  // reader가 이미지 읽도록 하기
+		  reader.readAsDataURL(input.files[0])
+	  }
+	})
 })
 
-async function createEvent() {
+async function createEvent(id) {
+	
 	const name = $("#nameinput").val()
 	const desc = quill.getContents()
 	const text = quill.getText()
@@ -299,8 +374,9 @@ async function createEvent() {
 	const importance = $("#importance-range").val()
 	const type = $("#typeinput").find(":selected").val()
 	const color = $("#color-selection").data("color")
-	$("useemoji").prop("checked")
-	console.log(start.split("/"))
+	let emojithumb=$("#useemoji").prop("checked")
+	console.log(emojithumb)
+	// console.log(start.split("/"))
 	// start = start.split("/")[2]+"-"+start.split("/")[0]+"-"+start.split("/")[1]
 	// console.log(start)
 	// if(end)
@@ -319,12 +395,17 @@ async function createEvent() {
 		importance: importance,
 		type: type,
 		color: color,
-		isPeriod: end && type === "2" ? 1 : 0,
-		tags: "",
+		isPeriod: (end && type === "2") ? 1 : 0,
+		emojiThumbnail:(emojithumb ? 1 : 0),
+		tags: ""
 	}
 
-	if (event.eventname === "" || event.eventstart === "") {
-		alert("missing!")
+	if (event.eventname === "" ) {
+		alert("missing eventname!")
+		return
+	}
+	if(event.eventstart === ""){
+		alert("mimssing start date!")
 		return
 	}
 	if (type === "2" && event.eventend === "") {
@@ -333,30 +414,78 @@ async function createEvent() {
 	} else if (event.eventend === "") {
 		event.eventend = undefined
 	}
-	try {
-		let result = await fetch("/db/" + DB.id + "/event", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(event),
-		})
-		console.log(result)
-		if (result.ok) {
-			DB.isRecent = false
-			DB.reload()
-            closeEdit()
-		} else {
-			alert("Failed to create event!")
+	const formdata = new FormData();
+	formdata.append("eventname",event.eventname)
+	formdata.append("eventdesc",event.eventdesc)
+	formdata.append("desctext",event.desctext)
+	formdata.append("eventstart",event.eventstart)
+	if(event.eventend)
+		formdata.append("eventend",event.eventend)
+	if(event.emoji)
+		formdata.append("emoji",event.emoji)
+
+	formdata.append("importance",event.importance)
+	formdata.append("type",event.type)
+	formdata.append("color",event.color)
+	formdata.append("isPeriod",event.isPeriod)
+	formdata.append("emojiThumbnail",event.emojiThumbnail)
+	formdata.append("tags",event.tags)
+
+	const image = $("#input-image")[0].files[0];
+
+	if(image)
+		formdata.append('img', image);
+	else if(id!==undefined && DB.datamap.get(id).thumbnail){
+		formdata.append("thumbnail",DB.datamap.get(id).thumbnail)
+	}
+
+	//create event
+	if(!id){
+		try {
+			let result = await fetch("/db/" + DB.id + "/event", {
+				method: "POST",
+				headers: {
+					// "Content-Type": "application/json",
+				},
+				body: formdata,
+			})
+			console.log(result)
+			if (result.ok) {
+				DB.isRecent = false
+				DB.reload()
+				closeEdit()
+				alert("Successfully created event "+event.eventname)
+			} else {
+				alert("Failed to create event!")
+			}
+		} catch (e) {
+			alert(e)
 		}
-	} catch (e) {
-		alert(e)
+	}else{//edit event
+		console.log("edit")
+		try {
+			let result = await fetch("/db/event/" + id + "/edit", {
+				method: "POST",
+				body: formdata,
+			})
+			console.log(result)
+			if (result.ok) {
+				DB.isRecent = false
+				DB.reload()
+				closeEdit()
+				alert("Successfully edited event "+event.eventname)
+			} else {
+				alert("Failed to edit event!")
+			}
+		} catch (e) {
+			alert(e)
+		}
 	}
 }
 async function deleteItem(id){
     try {
-		let result = await fetch("/db/" + id + "/event", {
-			method: "DELETE",
+		let result = await fetch("/db/event/" + id + "/delete", {
+			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			}
@@ -377,9 +506,9 @@ async function loadData() {
 	loadTags()
 	if (DB.isRecent) return
 	try {
-		DB.data = (await (await fetch("/db/" + DB.id + "/events")).json()).items
+		DB.setData((await (await fetch("/db/" + DB.id + "/events")).json()).items)
+
 		DB.isRecent = true
-		console.log(DB.data)
 	} catch (e) {
 		alert("Error!")
 		console.error(e)
@@ -468,7 +597,6 @@ async function Timeline() {
           },
 		showCurrentTime: false,
         onRemove:function(item, callback){
-            console.log(item)
             if(confirm("Delete \""+item.name+"\"?"))
             {
                 deleteItem(item.id)
@@ -486,9 +614,13 @@ async function Timeline() {
 	for (const item of DB.data) {
 		if (item.eventend && item.isPeriod) {
 			let content = item_period(item.eventname, item.counter, item.color, item.importance)
-			if (item.emoji) {
+			if(item.thumbnail && item.emojiThumbnail===0){
+				content = item_period(item.eventname, item.counter, item.color, item.importance, addimg(item.thumbnail))
+			}
+			else if (item.emoji&& item.emoji!=="undefined") {
 				content = item_period(item.eventname, item.counter, item.color, item.importance, addemoji(item.emoji))
 			}
+
 			items.push({
 				id: item.counter,
 				content: content,
@@ -500,7 +632,10 @@ async function Timeline() {
 			})
 		} else if (item.eventend) {
 			let content = item_range(item.eventname, item.counter, item.color, item.importance)
-			if (item.emoji) {
+			if(item.thumbnail && item.emojiThumbnail===0){
+				content = item_range(item.eventname, item.counter, item.color, item.importance, addimg(item.thumbnail))
+			}
+			else if (item.emoji&& item.emoji!=="undefined") {
 				content = item_range(item.eventname, item.counter, item.color, item.importance, addemoji(item.emoji))
 			}
 			items.push({
@@ -514,7 +649,10 @@ async function Timeline() {
 			})
 		} else {
 			let content = item_moment(item.eventname, item.counter, item.color, item.importance)
-			if (item.emoji) {
+			if(item.thumbnail && item.emojiThumbnail===0){
+				content = item_moment(item.eventname, item.counter, item.color, item.importance, addimg(item.thumbnail))
+			}
+			else if (item.emoji&& item.emoji!=="undefined") {
 				content = item_moment(item.eventname, item.counter, item.color, item.importance, addemoji(item.emoji))
 			}
 			let type = "box"

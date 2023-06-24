@@ -85,26 +85,32 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
  
   
   <div id="emojiwindow" class="hidden">
-    <img src="shuffle.svg" id="shuffle-emoji"> 
+    <img src="x.svg" id="close-emoji" class="emoji-window-btn"> 
+    <img src="trash.svg" id="remove-emoji" class="emoji-window-btn"> 
+    <img src="shuffle.svg" id="shuffle-emoji" class="emoji-window-btn"> 
+    <div class="emoji-window-btn"  id="preview-emoji"><img src="smile.svg"></div>
+    <br>
     <emoji-picker></emoji-picker>
   </div>
   <div id="editwindow" class="hidden">
     <section id="section-input" class="container">
       <br>
-      <h2 style="text-align: center;">Add Event</h2>
-      <div class="inputitem" >
+      
+      <div class="inputitem" style="display: inline;">
         <button id="pickemoji"><img src="smile.svg"></button>
       </div>
+      <h2 style="text-align: center;display: inline;font-family: 'nanumEB';" >Add Event</h2>
+      
         <div class="row">
-  
+          
           <div class="inputitem">
             <label for="nameinput" class="visually-hidden">Name</label>
             <input type="text" class="form-control" id="nameinput" placeholder="Name">
           </div>
           <select class="form-select inputitem" id="typeinput" aria-label="Default select example">
             <option disabled>Select type</option>
-            <option value="1"selected>Event</option>
-            <option value="2">Period</option>
+            <option id="type-event" value="1"selected>Event</option>
+            <option id="type-period" value="2">Period</option>
           </select>
   
           <div class="dropdown inputitem">
@@ -120,7 +126,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           </div>
           
           <div class="inputitem">
-            <input class="form-control" type="file" id="formFile">
+            <input type="file"  id="input-image" class="form-control" accept="image/png,image/jpg,image/jpeg" name="img">
+
+            <!-- <input class="form-control" type="file" id="formFile"> -->
           </div>
           <div class="inputitem">
   
@@ -146,14 +154,18 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         <div class="inputitem" style="width: 200px;"> 
           <label for="importance" id="importance-label" class="form-label">Importance:5</label>
           <input type="range" id="importance-range" class="form-range" min="1" max="10"  id="importance" value="5">
-  
+          
         </div>
         <div class="row">
-          <div id="tagarea">
+          <div id="tagarea" class="col-12 col-md-4">
             <!-- <div class="tag-selection selected"><img src="check.png">tag1</div>
             <div class="tag-selection"><img src="check.png">tag2</div>
             <div class="tag-selection selected"><img src="check.png">tag3</div> -->
           </div>
+          <label id="thumbnail" class="col-12 col-md-6" for="input-image">
+            <!-- <img src="uploads/test.png"> -->
+          </label>
+          
         </div>
         <div id="editor-container" class="col-auto">
   
@@ -164,10 +176,13 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   
         <div class="row">
           <div class="col-auto">
-  
-            <button class="btn btn-primary " id="submit-event">Create</button>
+            <button class="btn btn-primary" id="submit-event-edit">Confirm edit</button>
+            <button class="btn btn-primary" id="submit-event">Create</button>
+            <button class="btn btn-secondary" id="cancel-event">Cancel</button>
           </div>
         </div>
+        <br>
+        <br>
   
   
   
