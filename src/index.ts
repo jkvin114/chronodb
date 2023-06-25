@@ -48,7 +48,6 @@ app.get("/db/:id/tags", async function (req: any, res: any) {
 
 app.post("/db/:id/event", ImageUploader.upload.single("img"),async function (req: any, res: any) {
 	const imgfile = req.file
-	console.log(imgfile.filename)
 	console.log(req.body)
 	let id = req.params.id
 	if(imgfile)
