@@ -46,7 +46,7 @@ app.get("/db/:id/tags", async function (req: any, res: any) {
 	res.status(200).json({ items: row })
 })
 
-app.post("/db/:id/event", ImageUploader.upload.single("img"),async function (req: any, res: any) {
+app.post("/db/:id/event", ImageUploader.upload.single("img"),ImageUploader.resizeImg,async function (req: any, res: any) {
 	const imgfile = req.file
 	console.log(req.body)
 	let id = req.params.id
@@ -65,7 +65,7 @@ app.post("/db/event/:id/delete", async function (req: any, res: any) {
 	res.status(200).end()
 })
 
-app.post("/db/event/:id/edit", ImageUploader.upload.single("img"), async function (req: any, res: any) {
+app.post("/db/event/:id/edit", ImageUploader.upload.single("img"),ImageUploader.resizeImg, async function (req: any, res: any) {
 	let id = req.params.id
 	const imgfile = req.file
 	

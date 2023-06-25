@@ -4,7 +4,8 @@ const VIEW = {
 	Table: "table",
 	Album:"album",
 	Board:"board",
-	Blog:"blog"
+	Blog:"blog",
+	Gallery:"gallery"
 }
 
 class Database {
@@ -179,6 +180,9 @@ function changeView(view){
 			break
 		case "album":
 			Album()
+			break
+		case "gallery":
+			 Gallery()
 			break
 		case "board":
 		case "blog":

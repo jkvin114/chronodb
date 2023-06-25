@@ -27,7 +27,8 @@ async function Table() {
 //	$(".nav-link").toggleClass("active")
     $("#table-loading").show()
 	await loadData()
-    $("#table-loading").hide()
+	setTimeout(()=>$("#table-loading").hide(),300)
+    
 	window.scrollTo(0, 0)
 	let tabledata = []
 	for (const item of DB.data) {

@@ -7,6 +7,7 @@ async function Timeline() {
 	$("#timeline-container").html("")
     $("#timeline-loading").show()
 	await loadData()
+	setTimeout(()=>$("#timeline-loading").hide(),500)
 	window.scrollTo(0, 0)
 	const container = document.getElementById("timeline-container")
 	var options = {
@@ -120,7 +121,6 @@ async function Timeline() {
 	}
 
 	const timeline = new vis.Timeline(container, new vis.DataSet(items), options)
-    $("#timeline-loading").hide()
 	timeline.on("select", function (properties) {
 		// console.log(properties.event);
 		$(".edit-item").remove()

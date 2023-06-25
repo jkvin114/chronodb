@@ -23,7 +23,7 @@ $("document").ready(function () {
 	//DB.id=sessionStorage.dbid
 	DB.id = id
 	if (!DB.id) DB.id = 1
-	changeView("album")
+	changeView("table")
 	quill = new Quill(document.getElementById("editor"), {
 		theme: "snow",
 		bounds: "#editor",

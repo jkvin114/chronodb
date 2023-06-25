@@ -15,6 +15,8 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 
 
   <link href="/styles/tabulator.min.css" rel="stylesheet">
+  <link href="/styles/flexbin.css" rel="stylesheet">
+
   <script type="text/javascript" src="/lib/tabulator.min.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
@@ -32,6 +34,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   <!-- https://atomiks.github.io/tippyjs/v6/getting-started -->
   <!-- https://unpkg.com/vis@0.5.1/docs/timeline.html -->
   <!-- https://www.daterangepicker.com/ -->
+  <!-- https://www.cssscript.com/responsive-justified-photo-grid-layout-pure-css-flexbin-css/ -->
 </head>
 <style>
   @font-face {
@@ -61,6 +64,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           </li>
           <li class="nav-item view-nav" data-view="album">
             <a class="nav-link">Album</a>
+          </li>
+          <li class="nav-item view-nav"  data-view="gallery">
+            <a class="nav-link">Gallery</a>
           </li>
           <li class="nav-item view-nav" data-view="board">
             <a class="nav-link">Board</a>
@@ -234,6 +240,13 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   <section id="section-board" class="hidden section container">
     <div id="table-container"></div>
   </section>  
+
+  <section id="section-gallery" class="hidden section container">
+    <div id="gallery-container" class="flexbin flexbin-margin ">
+      <!-- <a><img src="uploads/1687575479360.png"></a> -->
+    </div>
+  </section>  
+
   <section id="section-blog" class="hidden section container">
     <div id="blog-container">
       <div class="blog-post bg-light">
@@ -364,6 +377,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 <script src="/js/table.js"></script>
 <script src="/js/timeline.js"></script>
 <script src="/js/album.js"></script>
+<script src="/js/gallery.js"></script>
 
 <script src="/js/index.js"></script>
 
