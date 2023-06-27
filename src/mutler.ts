@@ -5,13 +5,13 @@ import sharp = require("sharp")
 import sizeOf = require("image-size")
 import fs from "fs"
 function getFilename() {
-  console.log(new Date().toISOString().slice(0, 19))
+	console.log(new Date().toISOString().slice(0, 19))
 	return (
-		new Date().toISOString().slice(0, 19).replace("T", "_").replace(/:/g,"") + "_" + Math.floor(Math.random() * 999)
+		new Date().toISOString().slice(0, 19).replace("T", "_").replace(/:/g, "") + "_" + Math.floor(Math.random() * 999)
 	)
 }
 
-const MAX_IMAGE_WIDTH=640
+const MAX_IMAGE_WIDTH = 640
 const fileFilter = (req: any, file: any, cb: any) => {
 	// 확장자 필터링
 	if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
@@ -23,9 +23,6 @@ const fileFilter = (req: any, file: any, cb: any) => {
 	}
 }
 export namespace ImageUploader {
-  
-
-
 	export const upload = multer({
 		storage: multer.diskStorage({
 			//폴더위치 지정
@@ -48,13 +45,13 @@ export namespace ImageUploader {
 			next()
 			return
 		}
-    const ext = path.extname(req.file.path)
-    const newname=getFilename()+ext
+		const ext = path.extname(req.file.path)
+		const newname = getFilename() + ext
 		try {
 			sharp(req.file.path) // 리사이징할 파일의 경로
 				.resize({ width: MAX_IMAGE_WIDTH }) // 원본 비율 유지하면서 width 크기만 설정
 				.withMetadata()
-				.toFile(PATH +"/"+ newname, (err, info) => {
+				.toFile(PATH + "/" + newname, (err, info) => {
 					if (err) throw err
 					console.log(info)
 					fs.unlink(req.file.path, (err) => {
@@ -62,14 +59,13 @@ export namespace ImageUploader {
 						// 원본파일을 삭제하지 않을거면 생략해줍니다
 						if (err) throw err
 					})
-          req.file.filename=newname
-          req.file.path=PATH +"/"+ newname
-          next()
+					req.file.filename = newname
+					req.file.path = PATH + "/" + newname
+					next()
 				})
-			
 		} catch (err) {
 			console.error(err)
-      delete req.file
+			delete req.file
 			next()
 		}
 	}

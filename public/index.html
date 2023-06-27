@@ -74,6 +74,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           <li class="nav-item view-nav"  data-view="blog">
             <a class="nav-link">Blog</a>
           </li>
+          <li class="nav-item view-nav"  data-view="list">
+            <a class="nav-link">List</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" onclick="openEdit()"><img src="edit.svg"></a>
           </li>
@@ -245,14 +248,57 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
     <div id="gallery-container" class="flexbin flexbin-margin ">
       <!-- <a><img src="uploads/1687575479360.png"></a> -->
     </div>
+    <div id="gallery-loading">
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class=" loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class=" loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class=" loading-item" style="height: 200px;">
+        </div>
+        <div class="loading-item" style="height: 200px;">
+        </div>
+        <div class=" loading-item" style="height: 200px;">
+        </div>
+    </div>
   </section>  
 
   <section id="section-blog" class="hidden section container">
     <div id="blog-container">
-      <div class="blog-post bg-light">
-        htllo
-      </div>
+      
+      <!-- <div class="blog-post">
+        <div class="blog-cover">
+          <b class="blog-cover-emoji">🎉</b>
+          <b class="blog-cover-stars"><img src="star.png"><img src="star.png"><img src="star.png"><img src="star.png"><img src="star.png"></b>
+        </div>
+        <div class="blog-header" >
+          <h1>Title</h1>
+          <b class="blog-header-date">2011-01-01</b>
+          <hr>
+          <div class="blog-header-btns">
+            <img src="edit.svg">
+            <img src="trash.svg">
+          </div>
+        </div>
+
+
+        
+      </div> -->
     </div>
+
     <div id="blog-loading">
       <div>
         <div class="album-loading-item loading-item" style="height: 150px;">
@@ -260,6 +306,14 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         <div class="album-loading-item loading-item" style="height: 35px;">
         </div>
       </div>
+    </div>
+  </section>
+  <section id="section-list" class="hidden section container">
+    <div id="list-container">
+
+    </div>
+    <div id="list-loading">
+
     </div>
   </section>
   
@@ -271,6 +325,13 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
     <br>
     <emoji-picker></emoji-picker>
   </div>
+
+<div id="postwindow" class="hidden">
+
+
+</div>
+
+
   <div id="editwindow" class="hidden">
     <section id="section-input" class="container">
       <br>
@@ -368,6 +429,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
     </section>
   </div>
   <div id="shadow" class="hidden"></div>
+  <div id="shadow-post" class="hidden"></div>
 </body>
 <!-- <script src="./js/example.js"></script> -->
 <script src="/js/emoji.js"></script>
@@ -378,6 +440,8 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 <script src="/js/timeline.js"></script>
 <script src="/js/album.js"></script>
 <script src="/js/gallery.js"></script>
+<script src="/js/blog.js"></script>
+<script src="/js/list.js"></script>
 
 <script src="/js/index.js"></script>
 

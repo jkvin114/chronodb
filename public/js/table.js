@@ -34,9 +34,11 @@ async function Table() {
 	for (const item of DB.data) {
 		let emoji = item.emoji ? item.emoji : ""
 		let t=allTags("2,1,0")
+
+		let name=`<b class='table-name' data-id=${item.counter}>${emoji + " " + item.eventname}</b>`
 		tabledata.push({
 			id: item.counter,
-			name: emoji + " " + item.eventname,
+			name: name,
 			importance: item.importance,
 			start: item.eventstart.slice(0, 10),
 			end: item.eventend ? item.eventend.slice(0, 10) : "",
@@ -64,7 +66,7 @@ async function Table() {
 		},
 		columns: [
 			//define the table columns
-			{ title: "Name", field: "name", editor: false },
+			{ title: "Name", field: "name", editor: false, formatter: "html" },
 			{ title: "Start", field: "start", hozAlign: "center", maxWidth: 130, formatterParams: { inputFormat: "iso" } },
 			{
 				title: "Importance",
@@ -86,4 +88,14 @@ async function Table() {
 			{ title: "Tags", field: "tags", hozAlign: "center", formatter: "html" },
 		],
 	})
+	table.on("cellClick", function(e, cell){
+        //e - the click event object
+        //cell - cell componen
+		if(cell.getField()==="name"){
+
+			var row = cell.getRow()
+			var rowIndex = row.getIndex();
+			openPost(rowIndex)
+		}
+	});
 }

@@ -5,7 +5,8 @@ const VIEW = {
 	Album:"album",
 	Board:"board",
 	Blog:"blog",
-	Gallery:"gallery"
+	Gallery:"gallery",
+	List:"list"
 }
 
 class Database {
@@ -111,9 +112,27 @@ function closeEdit() {
 	$("body").css("overflow", "auto")
 	$("#thumbnail").html("")
 	$("#input-image").val(null)
+	closePost()
 }
 
+function openPost(id){
+	$("#postwindow").removeClass("hidden")
+	$("#shadow-post").removeClass("hidden")
+	$("body").css("overflow", "hidden")
+	let html=getBlogPost(DB.datamap.get(id),"post")
+	$("#postwindow").html(html)
+	populatePostContent(DB.datamap.get(id),"post")
+	addPostBtnEvent()
+}
+function closePost(){
+	$("#postwindow").addClass("hidden")
+	$("#shadow-post").addClass("hidden")
+	$("body").css("overflow", "auto")
+}
+
+
 function openEdit(id) {
+	
 	// console.log("edit" + id)
 
 	if (id !== undefined) {
@@ -121,7 +140,8 @@ function openEdit(id) {
 		$("#submit-event-edit").show()
 		$("#submit-event-edit").data("id", id)
 		$("#submit-event").hide()
-		$("#endinput").val("")
+		$("#endinput").val(null)
+
 		const data = DB.datamap.get(id)
 		if (!data) return
 		$("#nameinput").val(data.eventname)
@@ -163,6 +183,7 @@ function openEdit(id) {
 	$("#editwindow").removeClass("hidden")
 	$("#shadow").removeClass("hidden")
 	$("body").css("overflow", "hidden")
+	document.getElementById("editwindow").scrollTo(0, 0)
 }
 function changeView(view){
 	$(".section").addClass("hidden")
@@ -186,6 +207,11 @@ function changeView(view){
 			break
 		case "board":
 		case "blog":
+			Blog()
+			break
+		case "list":
+			ListView()
+			break
 
 	}
 }
@@ -257,7 +283,7 @@ async function createEvent(id) {
 	formdata.append("tags", event.tags)
 
 	const image = $("#input-image")[0].files[0]
-	console.log(image)
+	// console.log(image)
 	if (image) formdata.append("img", image)
 	else if (id !== undefined && DB.datamap.get(id).thumbnail) {
 		formdata.append("thumbnail", DB.datamap.get(id).thumbnail)

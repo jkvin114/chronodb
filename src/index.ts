@@ -1,6 +1,6 @@
 import { createServer } from "http"
 import fs = require("fs")
-import { Event } from "./repository" 
+import { Event, createDB } from "./repository" 
 import express = require("express")
 import { addEvent, countEvent, deleteEvent, editEvent, getAllDB, getAllEvents, getAllTags } from "./repository"
 import { ImageUploader } from "./mutler"
@@ -21,18 +21,19 @@ app.on("error", (err: any) => {
 })
 
 app.get("/db/all", async function (req: any, res: any) {
+	// createDB("격변의 시작","")
 	const db:any = await getAllDB()
     if (!db) res.status(500).end()
 	let counts:number[]=[]
-	console.log(db)
+	// console.log(db)
 	for(const d of db){
 		const count = await countEvent(d.counter) as number
 		counts.push(count)
-	}
-	console.log(counts)
+	}  
+	// console.log(counts)
 	res.status(200).json({ items: db,counts:counts.map((c:any)=>c[0]["COUNT(counter)"]) })
 })
-
+ 
 app.get("/db/:id/events", async function (req: any, res: any) {
 	let id = req.params.id
 	const row = await getAllEvents(id)

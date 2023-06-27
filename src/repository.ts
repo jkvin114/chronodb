@@ -10,8 +10,23 @@ export const db = mysql.createConnection({
 
 db.on("connection", () => console.log("connected to mysql"))
 
+export function createDB(name:string,desc:string) {
+	const queryString = "INSERT INTO `eventdb` (`title`, `desc`,createdAt,updatedAt) VALUES (?,?,?,?);"
+
+	return new Promise((resolve) => {
+		db.query(queryString, [name,desc,timestamp(),timestamp()], (err, result) => {
+			if (err) {
+				console.error(err)
+				resolve(null)
+			}
+			const row = <OkPacket>result
+			resolve(row)
+		})
+	})
+}
+
 export function getAllDB() {
-	const queryString = "SELECT * FROM chronodb.database"
+	const queryString = "SELECT * FROM chronodb.eventdb"
 
 	return new Promise((resolve) => {
 		db.query(queryString, [], (err, result) => {

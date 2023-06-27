@@ -60,9 +60,6 @@ async function Timeline() {
 		},
 	}
 	const items = [
-		//  {id: 116, content: item_period("item7",16,7,2),  className:"period",start: '2013-04-27', end: '2023-05-02',order:22,type:"range"},
-		//  {id: 126, content: item_period("item9",26,10,7), className:"period", start: '2012-04-27', end: '2025-05-02',order:27,type:"range"}
-		//   ,{id:124, content: item_range('item 4',24,4,5), start: '2010-03-16', end: '2013-04-19',className:"color-range",order:20,type:"range"},
 	]
 
 	for (const item of DB.data) {
@@ -125,7 +122,7 @@ async function Timeline() {
 		// console.log(properties.event);
 		$(".edit-item").remove()
 		if (properties.event.firstTarget.className === "edit-item") {
-			openEdit(properties.items[0])
+			openPost(properties.items[0])
 
 			properties.event.stopPropagation()
 			properties.event.preventDefault()
@@ -134,7 +131,7 @@ async function Timeline() {
 			$(".eventitem-" + properties.items[0])
 				.not(".vis-dot")
 				.not(".vis-line")
-				.append(`<img data-id=${properties.items[0]} class='edit-item' src='edit.svg'>`)
+				.append(`<img data-id=${properties.items[0]} class='edit-item' src='search.svg'>`)
 		}
 	})
 

@@ -33,6 +33,8 @@ $("document").ready(function () {
 		},
 	})
 
+	
+	
 	document.querySelector("emoji-picker").addEventListener("emoji-click", (event) => {
 		$("#pickemoji").html(event.detail.unicode)
 		$("#pickemoji").data("emoji", event.detail.unicode)
@@ -51,6 +53,7 @@ $("document").ready(function () {
 	$("#remove-emoji").click(function () {
 		$("#pickemoji").html('<img src="smile.svg">')
 		$("#pickemoji").data("emoji", null)
+		$("#preview-emoji").html("")
 	})
 
 	$("#close-emoji").click(function () {
@@ -62,8 +65,8 @@ $("document").ready(function () {
 		e.preventDefault()
 		$("#emojiwindow").removeClass("hidden")
 	})
-	$("#shadow").click(function (e) {
-		closeEdit()
+	$("#shadow-post").click(function (e) {
+		closePost()
 	})
 
 	let str = "<div data-color='rand' class='dropdown-item color-item'><img src='shuffle.svg'></div>"

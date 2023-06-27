@@ -1,8 +1,32 @@
+function focusImage(src,name,imgratio){
+  let winratio=window.innerHeight/window.innerWidth
+  $("body").append(`
+    <div id="imageview">
+      <b class=imageview-text>${name}</b>
+      <img src="${src}">
+    </div>
+  `)
+  if(winratio < imgratio){
+    $("#imageview img").css("height","100%")
+    $("#imageview img").css("width","auto")
+  }
+  
+  $("html").css("overflow","hidden")
+
+  $("#imageview").click(function(){
+    $("#imageview").remove()
+    $("html").css("overflow","auto")
+  })
+}
+
 async function Gallery() {
-    
+  $("#gallery-loading").show()
+
 	DB.view = VIEW.Album
 	await loadData()
-    
+  
+  $("#gallery-loading").hide()
+
 	window.scrollTo(0, 0)
 	let html=""
 	for (const item of DB.data) {
@@ -17,24 +41,6 @@ async function Gallery() {
 
     $(".gallery-item").click(function(){
         console.log("imageclick")
-        let winratio=window.innerHeight/window.innerWidth
-        let imgratio=$(this).height()/$(this).width()
-        $("body").append(`
-          <div id="imageview">
-            <b class=imageview-text>${$(this).data("name")}</b>
-            <img src="${$(this).data("src")}">
-          </div>
-        `)
-        if(winratio < imgratio){
-          $("#imageview img").css("height","100%")
-          $("#imageview img").css("width","auto")
-        }
-        
-        $("html").css("overflow","hidden")
-  
-        $("#imageview").click(function(){
-          $("#imageview").remove()
-          $("html").css("overflow","auto")
-        })
+        focusImage($(this).data("src"),$(this).data("name"),$(this).height()/$(this).width())
       });
 }

@@ -17,7 +17,6 @@ async function Album() {
             </div>`
         }
         else{
-            console.log(item.desctext)
             let text = item.desctext?item.desctext:""
             if(!text.replace(/\s/g, '').length)
             {
@@ -59,6 +58,6 @@ async function Album() {
     $("#album-container").html(html)
     $("#album-loading").hide()
     $(".album-item").click(function(){
-        openEdit($(this).data("id"))
+        openPost($(this).data("id"))
     })
 }

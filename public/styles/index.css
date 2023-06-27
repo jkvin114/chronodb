@@ -267,6 +267,9 @@ border: none;
 .tabulator .tabulator-header{
 border-bottom: 1px solid #bebebe;
 }
+.table-name:hover{
+    text-decoration: underline;
+}
 /* tooltip=================================== */
 .tooltip-content{
     max-width: 200px;
@@ -305,7 +308,7 @@ border-bottom: 1px solid #bebebe;
     margin-top:10px ;
     border-radius: 4px;
 }
-#album-loading{
+#album-loading,#gallery-loading{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -318,8 +321,14 @@ border-bottom: 1px solid #bebebe;
     /* flex-grow: 1; */
 }
 .album-loading-item{
+    min-width: 150px;
+    
     margin: 5px;
     border-radius: 4px;
+}
+#gallery-loading .loading-item{
+    margin: 2px;
+    width: clamp(150px,25vw,250px);
 }
 .loading-item{
     background-color: #e4e4e4;
@@ -409,7 +418,7 @@ border-bottom: 1px solid #bebebe;
     margin: 10px;
     display: inline-block;
 }
-#shadow{
+#shadow,#shadow-post{
     background: rgba(150,150,150,0.4);
     position: fixed;
     width: 100%;
@@ -417,6 +426,9 @@ border-bottom: 1px solid #bebebe;
     top: 0;
     left: 0;
     z-index: 9999;
+}
+#shadow-post{
+    z-index: 9998;
 }
 #emojiwindow{
     position: fixed;
@@ -606,6 +618,7 @@ emoji-picker{
 }
 .album-item .card-img-top.noimage{
     padding: 10px;
+    overflow:hidden;
 }
 .noimage li{
     word-break: break-all;
@@ -653,11 +666,124 @@ emoji-picker{
 }
 
 /* Blog======================================== */
-.blog-post{
+.blog-post .ql-editor{
     width: 100%;
+    background: white;
+    font-size: 1rem;
+    border: none;
+}
+.blog-img{
+    width: 500px;
+    margin: 10px;
+    margin-right: 20px;
+    float: left;
+    display: block;
+    cursor: pointer;
+}
+@media (max-width: 1000px){
+
+    .blog-img{
+        width: 300px;
+    }
+}
+@media (max-width: 800px) {
+    .blog-img{
+        float: none;
+    }
+}
+.blog-content{
+    background: white;
+
+    min-height: 200px;
+}
+.blog-content.ql-container.ql-snow{
+   border: none;
+   font-size: 0.9rem;
+}
+.blog-header{
+    background: white;
+    padding: 15px;
+    padding-top: 40px;
+    position: relative;
+}
+.blog-header hr{
+    margin-bottom: 0;
+    margin-top: 15px;
+}
+.blog-cover{
+    height: 150px;
+    background-color: #505050;
+    position: relative;
+}
+.blog-cover-emoji{
+    position: absolute;
+    top:120px;
+    font-size: 40px;
+    left:30px;
+    z-index: 1;
+    cursor: pointer;
+}
+.blog-cover-emoji:hover{
+    background-color: rgba(89, 89, 89, 0.5);
+}
+.blog-cover-stars{
+    position: absolute;
+    top:30px;
+    right:30px;
+    z-index: 1;
+    cursor: pointer;
+    text-align: center;
+}
+.blog-cover-stars img{
+    width: 15px;
+}
+
+.blog-header-btns{
+    position: absolute;
+    right: 20px;
+    bottom: 30px;
+}
+.blog-header-btns img{
+    width: 25px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+.blog-header-date{
+    font-size: 0.8rem;
+    color: #434343;
+}
+.blog-header-btns img:hover{
+    opacity: 1;
+}
+#list-container{
+    background-color: white;
+    padding: 10px;
+    padding-left: 3vw;
+}
+#list-container li.desc{
+    font-size: 0.8rem;
+    color: #2f2f2f;
+    list-style-type: circle;
 
 }
-#blog-container{
-    background-color: black;
-    border: 3px solid black;
+.list-post-btn{
+    cursor: pointer;
+    margin-left: 4px;
+
+}
+.list-post-btn:hover{
+    transform: scale(1.1);
+}
+
+#postwindow{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform:translate(-50%,-50%);
+    z-index: 10000;
+    width: 90%;
+    height: 85vh;
+    background-color: white;
+    overflow: auto;
+    border: 2px solid rgb(167, 167, 167);
 }

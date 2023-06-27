@@ -23,7 +23,7 @@ async function dbList() {
 	}
 }
 
-async function deleteItem(id) {
+async function deleteItem(id,reload) {
 	try {
 		let result = await fetch("/db/event/" + id + "/delete", {
 			method: "POST",
@@ -34,7 +34,8 @@ async function deleteItem(id) {
 		console.log(result)
 		if (result.ok) {
 			DB.isRecent = false
-			// DB.reload()
+			if(reload)
+				DB.reload()
 		} else {
 			alert("Failed to delete event!")
 		}
