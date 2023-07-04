@@ -1,4 +1,6 @@
 function isEmpty(text){
+    // console.log(text)
+    if(typeof(text)!=="string") return false
     if(!text) return true
     return text.replace(/\s/g, '').length===0
 }

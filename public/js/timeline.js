@@ -104,11 +104,12 @@ async function Timeline() {
 				content = item_moment(item.eventname, item.counter, item.color, item.importance, addemoji(item.emoji))
 			}
 			let type = "box"
-			if (item.importance < 4) type = "point"
+			let classname="eventitem-" + item.counter
+			if (item.importance < 4) classname+=" event-light"
 			items.push({
 				id: item.counter,
 				content: content,
-				className: "eventitem-" + item.counter,
+				className: classname,
 				start: item.eventstart.split("T")[0],
 				order: item.importance,
 				type: type,
@@ -143,6 +144,17 @@ async function Timeline() {
 			allowHTML: true,
 		})
 	}
+
+	// $("#saveimg").off()
+	// $("#saveimg").click(function(){
+	// 	html2canvas(document.getElementById("timeline-container")).then(
+	// 		function (canvas) {
+	// 			document
+    //                 .getElementById('section-timeline')
+    //                 .appendChild(canvas);
+	// 		})
+
+	// })
 	// $(".event").off()
 	// $(".event-moment").hover(function(){
 	//     console.log("Sd")

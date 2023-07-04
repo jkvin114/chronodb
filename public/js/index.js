@@ -38,6 +38,7 @@ class Database {
 		quill.setContents([])
 		changeView(this.view)
 	}
+	
 }
 const DB = new Database()
 var quill
@@ -134,6 +135,9 @@ function closePost(){
 function openEdit(id) {
 	
 	// console.log("edit" + id)
+	$("#pickemoji").html('<img src="smile.svg">')
+	$("#pickemoji").data("emoji", null)
+	$("#preview-emoji").html("")
 
 	if (id !== undefined) {
 		$("#editwindow h2").html("Edit Event")
@@ -141,6 +145,8 @@ function openEdit(id) {
 		$("#submit-event-edit").data("id", id)
 		$("#submit-event").hide()
 		$("#endinput").val(null)
+
+
 
 		const data = DB.datamap.get(id)
 		if (!data) return
@@ -189,6 +195,14 @@ function changeView(view){
 	$(".section").addClass("hidden")
 	$("#section-"+view).removeClass("hidden")
 	DB.view=view
+	const url = new URL(window.location);
+	url.searchParams.set('view', view);
+	window.history.pushState(null, '', url.toString());
+
+
+	// window.location.search = urlParams;
+
+
 	switch(view){
 		case "db":
 			window.location.href="/"
@@ -206,13 +220,14 @@ function changeView(view){
 			 Gallery()
 			break
 		case "board":
+			Board()
+			break
 		case "blog":
 			Blog()
 			break
 		case "list":
 			ListView()
 			break
-
 	}
 }
 
@@ -254,15 +269,19 @@ async function createEvent(id) {
 	}
 
 	if (event.eventname === "") {
-		alert("missing eventname!")
+		alert("Missing eventname!")
+		return
+	}
+	if(event.eventname>=20){
+		alert("Eventname should be shorter than 20 characters")
 		return
 	}
 	if (event.eventstart === "") {
-		alert("mimssing start date!")
+		alert("Missing start date!")
 		return
 	}
 	if (type === "2" && event.eventend === "") {
-		alert("period requires end date!")
+		alert("Period requires end date!")
 		return
 	} else if (event.eventend === "") {
 		event.eventend = undefined
@@ -304,7 +323,7 @@ async function createEvent(id) {
 				DB.isRecent = false
 				DB.reload()
 				closeEdit()
-				alert("Successfully created event " + event.eventname)
+			//	alert("Successfully created event " + event.eventname)
 			} else {
 				alert("Failed to create event!")
 			}
@@ -324,7 +343,7 @@ async function createEvent(id) {
 				DB.isRecent = false
 				DB.reload()
 				closeEdit()
-				alert("Successfully edited event " + event.eventname)
+			//	alert("Successfully edited event " + event.eventname)
 			} else {
 				alert("Failed to edit event!")
 			}

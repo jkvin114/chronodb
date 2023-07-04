@@ -36,20 +36,27 @@ function getBlogPost(item,index)
 }
 
 function populatePostContent(item,index){
-	console.log(item.desctext)
 	if(isEmpty(item.desctext) && !item.thumbnail) {
+		
 		document.getElementById("blog-post-"+index).innerHTML='<p style="padding:10px;">[No Content]</p>'
 		return
 	}
-	const blogquill = new Quill(document.getElementById("blog-post-"+index), {
-		theme: "snow",
-		bounds: ".blog-post",
-		modules: {
-			toolbar: false,
-		},
-	})
-	blogquill.setContents(item.eventdesc)
-	blogquill.enable(false);
+	if(!isEmpty(item.desctext) && isEmpty(item.eventdesc)){
+		document.getElementById("blog-post-"+index).innerHTML=`<p style="padding:10px;">${item.desctext}</p>`
+		return
+	}
+	else{
+		const blogquill = new Quill(document.getElementById("blog-post-"+index), {
+			theme: "snow",
+			bounds: ".blog-post",
+			modules: {
+				toolbar: false,
+			},
+		})
+		blogquill.setContents(item.eventdesc)
+		blogquill.enable(false);
+	}
+	
 	if(item.thumbnail){
 		$(`#blog-post-${index} .ql-editor`).prepend(`<img class='blog-img' src="uploads/${item.thumbnail}" data-src="uploads/${item.thumbnail}">`)
 	}

@@ -16,7 +16,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 
   <link href="/styles/tabulator.min.css" rel="stylesheet">
   <link href="/styles/flexbin.css" rel="stylesheet">
-
+  <!-- <script src=
+"https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
+  </script> -->
   <script type="text/javascript" src="/lib/tabulator.min.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
@@ -107,6 +109,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 
   <section id="section-timeline" class="hidden section">
     <div id="timeline-container"></div>
+
     <div id="timeline-loading" class="list-group">
       <div class="row w-100">
         <div class="col-1 timeline-loading-item loading-item" style="margin-left: 10%;">
@@ -132,6 +135,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         </div>
       </div>
     </div>
+    <!-- <button id="saveimg">save as image</button> -->
   </section>
   <section id="section-table" class="hidden section">
     <div id="table-container"></div>
@@ -241,7 +245,33 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
     </div>
   </section>  
   <section id="section-board" class="hidden section container">
-    <div id="table-container"></div>
+    <div id="board-toolbar">
+      <div class="board-toolbar-section">
+        <img src="palette.png" class="groupby-btn active" data-val="color" title="group by color"> 
+        <img src="calendar.svg" class="groupby-btn" data-val="year" title="group by year"> 
+        <img src="star.png" class="groupby-btn" data-val="importance" title="group by importance"> 
+      </div>
+      <div class="board-toolbar-section">
+        <img src="order.svg" class="orderby-btn active" title="descending order" data-val='1'> 
+        <img src="order.svg" class="orderby-btn" style="transform: rotate(180deg);" title="ascending order" data-val='-1'> 
+      </div>
+    </div>
+    <div id="board-container">
+      <div class="board-area">
+        <div class="board-item">
+          <div class="board-item-content">
+            item
+          </div>
+          <div class="board-item-right">
+            <img class="board-item-importance" src="alert.svg">
+          </div>
+        </div>
+
+      </div>
+
+
+
+    </div>
   </section>  
 
   <section id="section-gallery" class="hidden section container">
@@ -442,6 +472,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 <script src="/js/gallery.js"></script>
 <script src="/js/blog.js"></script>
 <script src="/js/list.js"></script>
+<script src="/js/board.js"></script>
 
 <script src="/js/index.js"></script>
 

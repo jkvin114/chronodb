@@ -8,6 +8,8 @@ export const db = mysql.createConnection({
 	database: "chronodb",
 })
 
+const privacy_level=2
+
 db.on("connection", () => console.log("connected to mysql"))
 
 export function createDB(name:string,desc:string) {
@@ -26,10 +28,10 @@ export function createDB(name:string,desc:string) {
 }
 
 export function getAllDB() {
-	const queryString = "SELECT * FROM chronodb.eventdb"
+	const queryString = "SELECT * FROM chronodb.eventdb WHERE privacy_level <= ?"
 
 	return new Promise((resolve) => {
-		db.query(queryString, [], (err, result) => {
+		db.query(queryString, [privacy_level], (err, result) => {
 			if (err) {
 				console.error(err)
 				resolve(null)

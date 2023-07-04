@@ -23,7 +23,10 @@ $("document").ready(function () {
 	//DB.id=sessionStorage.dbid
 	DB.id = id
 	if (!DB.id) DB.id = 1
-	changeView("table")
+
+	let view = query.get("view")
+	if(!view) view="table"
+	changeView(view)
 	quill = new Quill(document.getElementById("editor"), {
 		theme: "snow",
 		bounds: "#editor",
@@ -135,5 +138,19 @@ $("document").ready(function () {
 			// reader가 이미지 읽도록 하기
 			reader.readAsDataURL(input.files[0])
 		}
+	})
+	$(".groupby-btn").click(function(){
+		if(DB.view!==VIEW.Board) return
+		$(".groupby-btn").removeClass("active")
+		$(this).addClass("active")
+		BoardState.GroupBy=$(this).data("val")
+		Board()
+	})
+	$(".orderby-btn").click(function(){
+		if(DB.view!==VIEW.Board) return
+		$(".orderby-btn").removeClass("active")
+		$(this).addClass("active")
+		BoardState.OrderBy=Number($(this).data("val"))
+		Board()
 	})
 })
