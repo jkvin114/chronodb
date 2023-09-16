@@ -8,7 +8,7 @@ export const db = mysql.createConnection({
 	database: "chronodb",
 })
 
-const privacy_level=2
+const privacy_level=3
 
 db.on("connection", () => console.log("connected to mysql"))
 
@@ -54,6 +54,110 @@ export function getAllTags(dbid: string) {
 
 			resolve(row)
 		})
+	})
+}
+
+export function addTag(dbid:string,name:string,color:string){
+	const queryString =
+		"INSERT INTO tag (dbid,name ,color) " +
+		"VALUES (?,?,?);"
+
+	return new Promise<OkPacket|null>((resolve) => {
+		db.query(
+			queryString,
+			[
+				Number(dbid),name,color
+			],
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					resolve(null)
+				}
+				const row = <OkPacket>result
+				resolve(row)
+			}
+		)
+	})
+}
+export function deleteTag(dbid:string,counter:number){
+	const queryString =
+		"DELETE FROM tag WHERE dbid = ? AND counter = ? "
+
+	return new Promise((resolve) => {
+		db.query(
+			queryString,
+			[
+				Number(dbid),counter
+			],
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					resolve(null)
+				}
+				const row = <OkPacket>result
+				resolve(row)
+			}
+		)
+	})
+}
+
+export function getAllEventTags(dbid: string) {
+	const queryString = "SELECT * FROM eventtag WHERE dbid = ?"
+
+	return new Promise((resolve) => {
+		db.query(queryString, [dbid], (err, result) => {
+			if (err) {
+				console.error(err)
+				resolve(null)
+			}
+			const row = <RowDataPacket>result
+
+			resolve(row)
+		})
+	})
+}
+export async function eventTagOn(dbid: number,eventid: number,tagid:number){
+	const queryString =
+		"INSERT INTO eventtag (dbid,event ,tag) " +
+		"VALUES (?,?,?);"
+
+	return new Promise<OkPacket|null>((resolve) => {
+		db.query(
+			queryString,
+			[
+				dbid,eventid,tagid
+			],
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					resolve(null)
+				}
+				const row = <OkPacket>result
+				resolve(row)
+			}
+		)
+	})
+}
+
+export function eventTagOff(dbid: number,eventid: number,tagid:number){
+	const queryString =
+	"DELETE FROM eventtag WHERE dbid = ? AND event = ? AND tag = ? "
+
+	return new Promise((resolve) => {
+		db.query(
+			queryString,
+			[
+				dbid,eventid,tagid
+			],
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					resolve(null)
+				}
+				const row = <OkPacket>result
+				resolve(row)
+			}
+		)
 	})
 }
 export function countEvent(id: string) {

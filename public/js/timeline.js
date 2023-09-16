@@ -1,4 +1,67 @@
 
+function item_moment(content, id, colorId, imp, icon) {
+	if (!icon) icon = ""
+	imp = Math.max(1, Math.min(10, imp))
+	if (!DB.visualize_importance) imp = 5
+
+	return (
+		`<div data-id=${id} id="event-${id}" class='event event-moment imp-${imp}' data-color=${colorId} data-type=item data-clicked=0` +
+		` style="background-color:${COLORS_LIGHT[colorId]};"/>${icon}${parsecontent(content)}</div>`
+	)
+}
+
+function item_range(content, id, colorId, imp, icon) {
+	if (!icon) icon = ""
+	imp = Math.max(1, Math.min(10, imp))
+	if (!DB.visualize_importance) imp = 5
+
+	return (
+		`<div data-id=${id} id="event-${id}" class='event event-range imp-${imp}' data-color=${colorId} data-type=item data-clicked=0` +
+		` style="background:linear-gradient(to left,${COLORS_LIGHT[colorId]},${
+			COLORS_MID[colorId]
+		});"/>${icon}${parsecontent(content)}</div>`
+	)
+}
+
+function item_period(content, id, colorId, imp, icon) {
+	if (!icon) icon = ""
+	imp = Math.max(1, Math.min(10, imp))
+	if (!DB.visualize_importance) imp = 5
+
+	return (
+		`<div data-id=${id} id="event-${id}" class='event event-period imp-${imp}' data-color=${colorId} data-type=item data-clicked=0` +
+		` style="background:linear-gradient(to top,${COLORS_LIGHT[colorId]},${
+			COLORS_MID[colorId]
+		});"/>${icon}${parsecontent(content)}</div>`
+	)
+}
+function addimg(img) {
+	return `<img class=eventimg src="./uploads/${img}">`
+}
+function addemoji(emoji) {
+	//129424
+	return `<b class=eventemoji>${emoji}</b>`
+}
+function parsecontent(content) {
+	let sliced = ""
+	if (content.length > 40) {
+		sliced = content.slice(0, 40) + ".."
+	} else sliced = content
+	return `<a title=${content}>${sliced}</a>`
+}
+
+function tooltipContent(name, content, start, end) {
+	let text = content
+	if (text.length > 200) text = content.slice(0, 200) + ".."
+
+	return `<div class=tooltip-content>${name}<hr>
+    ${text !== "" ? "<a class=tooltip-desc>" + text + "</a><hr>" : ""}
+        <div class=tooltip-date>
+            ${start.split("T")[0]}${end ? "~" + end.split("T")[0] : ""}
+        </div>
+    </div>`
+}
+
 async function Timeline() {
 	DB.view = VIEW.Timeline
 	//$("#section-timeline").removeClass("hidden")
@@ -6,7 +69,7 @@ async function Timeline() {
 	//$(".nav-link").toggleClass("active")
 	$("#timeline-container").html("")
     $("#timeline-loading").show()
-	await loadData()
+	await DatabaseStub.loadData()
 	setTimeout(()=>$("#timeline-loading").hide(),500)
 	window.scrollTo(0, 0)
 	const container = document.getElementById("timeline-container")
@@ -54,7 +117,7 @@ async function Timeline() {
 		showCurrentTime: false,
 		onRemove: function (item, callback) {
 			if (confirm('Delete "' + item.name + '"?')) {
-				deleteItem(item.id)
+				DatabaseStub.deleteItem(item.id)
 				callback(item)
 			} else callback(null)
 		},

@@ -1,15 +1,16 @@
-
 const VIEW = {
 	Timeline: "timeline",
 	Table: "table",
-	Album:"album",
-	Board:"board",
-	Blog:"blog",
-	Gallery:"gallery",
-	List:"list"
+	Album: "album",
+	Board: "board",
+	Blog: "blog",
+	Gallery: "gallery",
+	List: "list",
 }
 
 class Database {
+	static IsLocal = false
+
 	constructor() {
 		this.data = []
 		this.datamap = new Map() // id=>data
@@ -18,19 +19,34 @@ class Database {
 		this.id = 1
 		this.tags = new Map() // id=>tag
 		this.view = VIEW.Table
+		this.dbData = new Map() //dbid => name,desc
+		this.currentEditingEvent=-1
 	}
 	setData(data) {
-		this.data = data.sort((a,b)=>{
+		this.data = data.sort((a, b) => {
 			return new Date(b.eventstart).valueOf() - new Date(a.eventstart).valueOf()
 		})
 		for (const d of data) {
+			d.tags=new Set()
 			this.datamap.set(d.counter, d)
 		}
 	}
-	setTags(tags){
-		for (const d of tags) {
-			this.tags.set(d.id, d)
+	setTags(tagdata) {
+		console.log(tagdata)
+		for (const d of tagdata.items) {
+			this.tags.set(d.counter, d)
 		}
+		for (const d of tagdata.eventtags) {
+			let event=this.datamap.get(d.event)
+			if(event)
+				event.tags.add(d.tag)
+		}
+	}
+	setDBData(id, name, desc) {
+		this.dbData.set(String(id), { name: name, desc: desc })
+	}
+	thisDBData() {
+		return this.dbData.get(this.id)
 	}
 
 	reload() {
@@ -38,72 +54,47 @@ class Database {
 		quill.setContents([])
 		changeView(this.view)
 	}
-	
 }
 const DB = new Database()
 var quill
-
-function item_moment(content, id, colorId, imp, icon) {
-	if (!icon) icon = ""
-	imp = Math.max(1, Math.min(10, imp))
-	if (!DB.visualize_importance) imp = 5
-
-	return (
-		`<div data-id=${id} id="event-${id}" class='event event-moment imp-${imp}' data-color=${colorId} data-type=item data-clicked=0` +
-		` style="background-color:${COLORS_LIGHT[colorId]};"/>${icon}${parsecontent(content)}</div>`
+const DatabaseStub = Database.IsLocal ? new LocalDatabase() : new ServerConnection()
+function exportData() {
+	// let data=JSON.stringify()
+	const name=localStorage.getItem(DB.id+"_name")
+	const desc=localStorage.getItem(DB.id+"_desc")
+	downloadObjectAsJson(
+		{ 
+			items: DB.data, 
+			name: (name ? name : "database_" + DB.id), 
+			desc: (desc ? desc : "" )
+		},
+		"database_" +(name ? name :DB.id)
 	)
 }
-
-function item_range(content, id, colorId, imp, icon) {
-	if (!icon) icon = ""
-	imp = Math.max(1, Math.min(10, imp))
-	if (!DB.visualize_importance) imp = 5
-
-	return (
-		`<div data-id=${id} id="event-${id}" class='event event-range imp-${imp}' data-color=${colorId} data-type=item data-clicked=0` +
-		` style="background:linear-gradient(to left,${COLORS_LIGHT[colorId]},${
-			COLORS_MID[colorId]
-		});"/>${icon}${parsecontent(content)}</div>`
-	)
+async function uploadData(data) {
+	const dbdata=JSON.parse(data)
+	const items = dbdata.items
+	DB.id = hexId()
+	try {
+		if (!items || items.length == 0 || items[0].eventstart == null) {
+			alert("invalid format")
+			return
+		}
+		await DatabaseStub.addDatabase(DB.id, dbdata.name,dbdata.desc)
+		await DatabaseStub.createManyEventRequest(null, items)
+		alert("import complete!")
+		DatabaseStub.dbList()
+	} catch (e) {
+		alert("import failed" + e)
+	}
 }
-
-function item_period(content, id, colorId, imp, icon) {
-	if (!icon) icon = ""
-	imp = Math.max(1, Math.min(10, imp))
-	if (!DB.visualize_importance) imp = 5
-
-	return (
-		`<div data-id=${id} id="event-${id}" class='event event-period imp-${imp}' data-color=${colorId} data-type=item data-clicked=0` +
-		` style="background:linear-gradient(to top,${COLORS_LIGHT[colorId]},${
-			COLORS_MID[colorId]
-		});"/>${icon}${parsecontent(content)}</div>`
-	)
-}
-function addimg(img) {
-	return `<img class=eventimg src="./uploads/${img}">`
-}
-function addemoji(emoji) {
-	//129424
-	return `<b class=eventemoji>${emoji}</b>`
-}
-function parsecontent(content) {
-	let sliced = ""
-	if (content.length > 40) {
-		sliced = content.slice(0, 40) + ".."
-	} else sliced = content
-	return `<a title=${content}>${sliced}</a>`
-}
-
-function tooltipContent(name, content, start, end) {
-	let text = content
-	if (text.length > 200) text = content.slice(0, 200) + ".."
-
-	return `<div class=tooltip-content>${name}<hr>
-    ${text !== "" ? "<a class=tooltip-desc>" + text + "</a><hr>" : ""}
-        <div class=tooltip-date>
-            ${start.split("T")[0]}${end ? "~" + end.split("T")[0] : ""}
-        </div>
-    </div>`
+async function createDatabase() {
+	if (!$("#database-name-input").val()) {
+		alert("choose a name for database")
+		return
+	}
+	await DatabaseStub.addDatabase(DB.id, $("#database-name-input").val(), $("#database-desc-input").val())
+	DatabaseStub.dbList()
 }
 
 function closeEdit() {
@@ -116,37 +107,35 @@ function closeEdit() {
 	closePost()
 }
 
-function openPost(id){
+function openPost(id) {
 	$("#postwindow").removeClass("hidden")
 	$("#shadow-post").removeClass("hidden")
 	$("body").css("overflow", "hidden")
-	let html=getBlogPost(DB.datamap.get(id),"post")
-	$("#postwindow").html(html)
-	populatePostContent(DB.datamap.get(id),"post")
+	let html = getBlogPost(DB.datamap.get(id), "post")
+	$("#postwindow-content").html(html)
+	populatePostContent(DB.datamap.get(id), "post")
 	addPostBtnEvent()
 }
-function closePost(){
+function closePost() {
 	$("#postwindow").addClass("hidden")
 	$("#shadow-post").addClass("hidden")
 	$("body").css("overflow", "auto")
 }
 
-
 function openEdit(id) {
-	
 	// console.log("edit" + id)
 	$("#pickemoji").html('<img src="smile.svg">')
 	$("#pickemoji").data("emoji", null)
 	$("#preview-emoji").html("")
 
 	if (id !== undefined) {
+		DB.currentEditingEvent=id
 		$("#editwindow h2").html("Edit Event")
 		$("#submit-event-edit").show()
 		$("#submit-event-edit").data("id", id)
 		$("#submit-event").hide()
+		$("#tagarea-container").show()
 		$("#endinput").val(null)
-
-
 
 		const data = DB.datamap.get(id)
 		if (!data) return
@@ -181,31 +170,40 @@ function openEdit(id) {
 			$("#type-period").prop("selected", false)
 			$("#type-event").prop("selected", true)
 		}
+		$(".tag-selection-editable").removeClass("selected")
+		console.log(data.tags)
+		for(const tag of data.tags){
+			const tagobj=DB.tags.get(tag)
+			$("#eventtag_"+tag).addClass("selected")
+			$("#eventtag_"+tag).css("background", COLORS_MID[Number(tagobj.color)])
+		}
+
 	} else {
+		DB.currentEditingEvent=-1
+
 		$("#submit-event-edit").hide()
 		$("#submit-event").show()
 		$("#editwindow h2").html("Add New Event")
+		$("#tagarea-container").hide()
 	}
 	$("#editwindow").removeClass("hidden")
 	$("#shadow").removeClass("hidden")
 	$("body").css("overflow", "hidden")
 	document.getElementById("editwindow").scrollTo(0, 0)
 }
-function changeView(view){
+function changeView(view) {
 	$(".section").addClass("hidden")
-	$("#section-"+view).removeClass("hidden")
-	DB.view=view
-	const url = new URL(window.location);
-	url.searchParams.set('view', view);
-	window.history.pushState(null, '', url.toString());
-
+	$("#section-" + view).removeClass("hidden")
+	DB.view = view
+	const url = new URL(window.location)
+	url.searchParams.set("view", view)
+	window.history.pushState(null, "", url.toString())
 
 	// window.location.search = urlParams;
 
-
-	switch(view){
+	switch (view) {
 		case "db":
-			window.location.href="/"
+			window.location.href = "/"
 			break
 		case "timeline":
 			Timeline()
@@ -217,7 +215,7 @@ function changeView(view){
 			Album()
 			break
 		case "gallery":
-			 Gallery()
+			Gallery()
 			break
 		case "board":
 			Board()
@@ -231,8 +229,6 @@ function changeView(view){
 	}
 }
 
-
-
 async function createEvent(id) {
 	const name = $("#nameinput").val()
 	const desc = quill.getContents()
@@ -244,11 +240,7 @@ async function createEvent(id) {
 	const type = $("#typeinput").find(":selected").val()
 	const color = $("#color-selection").data("color")
 	let emojithumb = $("#useemoji").prop("checked")
-	// console.log(start.split("/"))
-	// start = start.split("/")[2]+"-"+start.split("/")[0]+"-"+start.split("/")[1]
-	// console.log(start)
-	// if(end)
-	//     end = end.split("/")[2]+"-"+end.split("/")[0]+"-"+end.split("/")[1]
+
 	if (end && new Date(start) >= new Date(end)) {
 		alert("End date should be later than start date!")
 		return
@@ -272,7 +264,7 @@ async function createEvent(id) {
 		alert("Missing eventname!")
 		return
 	}
-	if(event.eventname>=20){
+	if (event.eventname.length >= 20) {
 		alert("Eventname should be shorter than 20 characters")
 		return
 	}
@@ -286,6 +278,7 @@ async function createEvent(id) {
 	} else if (event.eventend === "") {
 		event.eventend = undefined
 	}
+
 	const formdata = new FormData()
 	formdata.append("eventname", event.eventname)
 	formdata.append("eventdesc", event.eventdesc)
@@ -299,81 +292,72 @@ async function createEvent(id) {
 	formdata.append("color", event.color)
 	formdata.append("isPeriod", event.isPeriod)
 	formdata.append("emojiThumbnail", event.emojiThumbnail)
-	formdata.append("tags", event.tags)
+	formdata.append("tags", "")
 
-	const image = $("#input-image")[0].files[0]
-	// console.log(image)
-	if (image) formdata.append("img", image)
-	else if (id !== undefined && DB.datamap.get(id).thumbnail) {
-		formdata.append("thumbnail", DB.datamap.get(id).thumbnail)
+	if (!Database.IsLocal) {
+		const image = $("#input-image")[0].files[0]
+		// console.log(image)
+		if (image) formdata.append("img", image)
+		else if (id !== undefined && DB.datamap.get(id).thumbnail) {
+			formdata.append("thumbnail", DB.datamap.get(id).thumbnail)
+		}
 	}
 
 	//create event
 	if (!id) {
-		try {
-			let result = await fetch("/db/" + DB.id + "/event", {
-				method: "POST",
-				headers: {
-					// "Content-Type": "application/json",
-				},
-				body: formdata,
-			})
-			console.log(result)
-			if (result.ok) {
-				DB.isRecent = false
-				DB.reload()
-				closeEdit()
-			//	alert("Successfully created event " + event.eventname)
-			} else {
-				alert("Failed to create event!")
-			}
-		} catch (e) {
-			alert(e)
-		}
+		DatabaseStub.createEventRequest(formdata, event)
 	} else {
 		//edit event
-		console.log("edit")
-		try {
-			let result = await fetch("/db/event/" + id + "/edit", {
-				method: "POST",
-				body: formdata,
-			})
-			console.log(result)
-			if (result.ok) {
-				DB.isRecent = false
-				DB.reload()
-				closeEdit()
-			//	alert("Successfully edited event " + event.eventname)
-			} else {
-				alert("Failed to edit event!")
-			}
-		} catch (e) {
-			alert(e)
-		}
+		DatabaseStub.editEventRequest(formdata, event, id)
 	}
 }
+
 function drawTags() {
 	let html = ""
 	for (const tag of DB.tags.values()) {
-		html += `<div class="tag-selection" data-id=${tag.id} data-color=${tag.color} style="background-color:${
+		html += `<div class="tag-selection tag-selection-editable" data-id=${tag.counter} id="eventtag_${tag.counter}" data-color=${tag.color} style="background-color:${
 			COLORS_LIGHT[tag.color]
 		};">
         <img src="check.png">${tag.name}</div>`
 	}
 	$("#tagarea").html(html)
-	$(".tag-selection").click(function () {
-		if(!$(this).data("id") || !$(this).data("color")) return
+	$(".tag-selection-editable").click(function () {
+		if (!$(this).data("id") || !$(this).data("color")) return
 
 		if ($(this).hasClass("selected")) {
 			$(this).css("background", COLORS_LIGHT[Number($(this).data("color"))])
 			$(this).removeClass("selected")
+			if(DB.currentEditingEvent!==-1)
+				DatabaseStub.setEventTag(DB.currentEditingEvent,$(this).data("id"),false)
 		} else {
 			$(this).addClass("selected")
 			$(this).css("background", COLORS_MID[Number($(this).data("color"))])
+			if(DB.currentEditingEvent!==-1)
+				DatabaseStub.setEventTag(DB.currentEditingEvent,$(this).data("id"),true)
 		}
 	})
 }
 function convertDate(date) {
 	date = date.split("T")[0]
 	return date.split("-")[2] + "/" + date.split("-")[1] + "/" + date.split("-")[0]
+}
+function openEditTag(){
+	$("#tagwindow").removeClass("hidden")
+	$("#shadow-post").removeClass("hidden")
+	let html = ""
+	for (const tag of DB.tags.values()) {
+		html += `<div class="tag-selection" data-id=${tag.counter} data-color=${tag.color} style="background-color:${
+			COLORS_MID[tag.color]
+		};">
+        ${tag.name}</div>`
+	}
+	$("#tagwindow-tags").html(html)
+	$("#create-tag-btn").off()
+	$("#create-tag-btn").click(async function(){
+		let name=$("#tagnameinput").val()
+		const color = $("#tag-color-selection").data("color")
+		await DatabaseStub.addTag(name,color)
+		await DatabaseStub.loadTags()
+		openEditTag()
+	})
 }

@@ -1,9 +1,3 @@
-function isEmpty(text){
-    // console.log(text)
-    if(typeof(text)!=="string") return false
-    if(!text) return true
-    return text.replace(/\s/g, '').length===0
-}
 
 const MONTHS=["January","February","March","April",
 "May","June","July","August","September","October","November","December"]
@@ -14,7 +8,7 @@ async function ListView(){
     $("#list-loading").show()
 
 	DB.view = VIEW.List
-	await loadData()
+	await DatabaseStub.loadData()
   
     $("#list-loading").hide()
     let html=""

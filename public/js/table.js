@@ -1,24 +1,4 @@
 
-function dayLength(start, end) {
-	if (!end) return 1
-	let sdate = new Date(start).valueOf()
-	let edate = new Date(end).valueOf()
-	return Math.floor((edate - sdate) / (1000 * 3600 * 24))
-}
-function tagHtml(id){
-	const tag=DB.tags.get(Number(id))
-	if(!tag) return ""
-	return `<div class='tag-selection selected' style="background-color:${
-		COLORS_LIGHT[Number(tag.color)]
-	};">${tag.name}</div>`
-}
-function allTags(tags){
-	let html=""
-	for(const t of tags.split(",")){
-		html+=tagHtml(t)
-	}
-	return "<div>"+html+"</div>"
-}
 async function Table() {
 	DB.view = VIEW.Table
 	$("#table-container").html("")
@@ -26,14 +6,14 @@ async function Table() {
 //	$("#section-table").removeClass("hidden")
 //	$(".nav-link").toggleClass("active")
     $("#table-loading").show()
-	await loadData()
+	await DatabaseStub.loadData()
 	setTimeout(()=>$("#table-loading").hide(),300)
     
 	window.scrollTo(0, 0)
 	let tabledata = []
 	for (const item of DB.data) {
 		let emoji = item.emoji ? item.emoji : ""
-		let t=allTags("2,1,0")
+		let t=allTags(item.tags)
 
 		let name=`<b class='table-name' data-id=${item.counter}>${emoji + " " + item.eventname}</b>`
 		tabledata.push({

@@ -3,7 +3,7 @@
 <head>
   <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.2, user-scalable=no" />
 
-  <title>Timeline-ChronoDB</title>
+  <title>ChronoDB</title>
   <script src="
 https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 "></script>
@@ -13,25 +13,26 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 
   <script type="text/javascript" src="https://unpkg.com/vis/dist/vis.min.js" rel="script"> </script>
 
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
-  <link href="/styles/tabulator.min.css" rel="stylesheet">
-  <link href="/styles/flexbin.css" rel="stylesheet">
+  <link href="styles/tabulator.min.css" rel="stylesheet">
+  <link href="styles/flexbin.css" rel="stylesheet">
   <!-- <script src=
 "https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
   </script> -->
-  <script type="text/javascript" src="/lib/tabulator.min.js"></script>
+  <script type="text/javascript" src="lib/tabulator.min.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-  <script src="/lib/jquery-3.6.0.min.js"></script>
+  <script src="lib/jquery-3.6.0.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  <link href="/styles/index.css" rel="stylesheet"/>
+  <link href="styles/index.css" rel="stylesheet"/>
   <!-- https://quilljs.com/docs/quickstart/ -->
   <!-- https://atomiks.github.io/tippyjs/v6/getting-started -->
   <!-- https://unpkg.com/vis@0.5.1/docs/timeline.html -->
@@ -51,7 +52,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand view-nav" data-view="db" style="cursor: pointer;">ChronoDB</a>
+      <a class="navbar-brand view-nav" data-view="db" style="cursor: pointer;" href="index.html">ChronoDB</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -67,7 +68,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           <li class="nav-item view-nav" data-view="album">
             <a class="nav-link">Album</a>
           </li>
-          <li class="nav-item view-nav"  data-view="gallery">
+          <li class="nav-item view-nav hide-on-local"  data-view="gallery">
             <a class="nav-link">Gallery</a>
           </li>
           <li class="nav-item view-nav" data-view="board">
@@ -80,7 +81,13 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
             <a class="nav-link">List</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" onclick="openEdit()"><img src="edit.svg"></a>
+            <a class="nav-link" onclick="openEdit()" title="create event"><img src="edit.svg"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="exportData()" title="Export data"><img src="download.svg"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="openEditTag()" title="Edit tags"><img src="tag.png"></a>
           </li>
         </ul>
       </div>
@@ -95,6 +102,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           <small>Donec id elit non mi porta.</small>
         </a> -->
       </div>
+
       <div id="database-loading" class="list-group">
         <div class=" w-100 database-loading-item loading-item">
         </div>
@@ -105,6 +113,22 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         <div class=" w-100 database-loading-item loading-item">
         </div>
       </div>
+      <div id="upload-data-section">
+        
+        <div class="inputitem">
+          <label for="nameinput" class="visually-hidden">Name</label>
+          <input type="text" class="form-control" id="database-name-input" placeholder="Name">
+        </div>
+        <div class="inputitem">
+          <label for="nameinput" class="visually-hidden">Description</label>
+          <input type="text" class="form-control" id="database-desc-input" placeholder="Description">
+        </div>
+        <label for="upload-data" id="upload-data-btn" title="import from file"><img src="download.svg" style="transform: rotate(180deg);"></label>
+        <input type="file"  id="upload-data" accept="application/json" name="upload-data" class="hidden">
+        <br> <button class="btn btn-primary" id="submit-create-db">Create New</button>
+         <!-- <button class="btn btn-primary" id="submit-upload-data">Import</button> -->
+      </div>
+
   </section>
 
   <section id="section-timeline" class="hidden section">
@@ -250,6 +274,8 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         <img src="palette.png" class="groupby-btn active" data-val="color" title="group by color"> 
         <img src="calendar.svg" class="groupby-btn" data-val="year" title="group by year"> 
         <img src="star.png" class="groupby-btn" data-val="importance" title="group by importance"> 
+        <img src="tag.png" class="groupby-btn" data-val="tag" title="group by tags"> 
+
       </div>
       <div class="board-toolbar-section">
         <img src="order.svg" class="orderby-btn active" title="descending order" data-val='1'> 
@@ -257,7 +283,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
       </div>
     </div>
     <div id="board-container">
-      <div class="board-area">
+      <!-- <div class="board-area">
         <div class="board-item">
           <div class="board-item-content">
             item
@@ -267,10 +293,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           </div>
         </div>
 
-      </div>
-
-
-
+      </div> -->
     </div>
   </section>  
 
@@ -357,12 +380,39 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   </div>
 
 <div id="postwindow" class="hidden">
+  <b id="post-close-btn">&times;</b>
+  <div id="postwindow-content">
 
+  </div>
+</div>
+<div id="tagwindow" class="hidden">
+  <b id="tag-close-btn">&times;</b>
+  <h1>Edit Tags</h1>
+  <div>
+    <div id="tagwindow-tags"></div>
+  </div>
+  <div class="inputitem">
+    <label for="tagnameinput" class="visually-hidden">Name</label>
+    <input type="text" class="form-control" id="tagnameinput" placeholder="Name">
+  </div>
 
+  <div class="dropdown inputitem">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="color-selection-span" id="tag-color-selection-current" style="background:white;margin: 1px;"></span>select color
+    </button>
+    <div  class="dropdown-menu">
+      <div id="tag-color-selection"></div>
+    </div>
+    <!-- <ul class="dropdown-menu" id="color-selection">
+      <li class="dropdown-item color-item">23</li>
+    </ul> -->
+  </div>
+  <br>
+  <button class="btn btn-primary" id="create-tag-btn">+ Add New</button>
 </div>
 
-
   <div id="editwindow" class="hidden">
+    <b id="edit-close-btn">&times;</b>
     <section id="section-input" class="container">
       <br>
       
@@ -395,7 +445,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
             </ul> -->
           </div>
           
-          <div class="inputitem">
+          <div class="inputitem hide-on-local" >
             <input type="file"  id="input-image" class="form-control" accept="image/png,image/jpg,image/jpeg" name="img">
 
             <!-- <input class="form-control" type="file" id="formFile"> -->
@@ -415,7 +465,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           
         </div>
   
-        <div class="form-check inputitem">
+        <div class="form-check inputitem hide-on-local" >
           <input class="form-check-input" type="checkbox" value="" id="useemoji" checked>
           <label class="form-check-label" for="useemoji">
             Use emoji thumbnail
@@ -427,10 +477,12 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           
         </div>
         <div class="row">
-          <div id="tagarea" class="col-12 col-md-4">
-            <!-- <div class="tag-selection selected"><img src="check.png">tag1</div>
-            <div class="tag-selection"><img src="check.png">tag2</div>
-            <div class="tag-selection selected"><img src="check.png">tag3</div> -->
+          <div id="tagarea-container" class="col-12 col-md-4">
+            <div id="tagarea">
+              <!-- <div class="tag-selection selected"><img src="check.png">tag1</div>
+              <div class="tag-selection"><img src="check.png">tag2</div>
+              <div class="tag-selection selected"><img src="check.png">tag3</div> -->
+            </div>
           </div>
           <label id="thumbnail" class="col-12 col-md-6" for="input-image">
             <!-- <img src="uploads/test.png"> -->
@@ -461,19 +513,23 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   <div id="shadow" class="hidden"></div>
   <div id="shadow-post" class="hidden"></div>
 </body>
-<!-- <script src="./js/example.js"></script> -->
-<script src="/js/emoji.js"></script>
-<script src="/js/ajax.js"></script>
-<script src="/js/colors.js"></script>
-<script src="/js/init.js"></script>
-<script src="/js/table.js"></script>
-<script src="/js/timeline.js"></script>
-<script src="/js/album.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/blog.js"></script>
-<script src="/js/list.js"></script>
-<script src="/js/board.js"></script>
+<script src="js/util.js"></script>
 
-<script src="/js/index.js"></script>
+<script src="js/localDatabase.js"></script>
+<script src="js/ajax.js"></script>
+<script src="js/index.js"></script>
+<!-- <script src="./js/example.js"></script> -->
+<script src="js/emoji.js"></script>
+<script src="js/colors.js"></script>
+<script src="js/init.js"></script>
+
+<script src="js/table.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/album.js"></script>
+<script src="js/gallery.js"></script>
+<script src="js/blog.js"></script>
+<script src="js/list.js"></script>
+<script src="js/board.js"></script>
+
 
 </html>

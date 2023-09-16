@@ -23,7 +23,7 @@ async function Gallery() {
   $("#gallery-loading").show()
 
 	DB.view = VIEW.Album
-	await loadData()
+	await DatabaseStub.loadData()
   
   $("#gallery-loading").hide()
 

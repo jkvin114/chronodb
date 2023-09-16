@@ -1,9 +1,10 @@
 import { createServer } from "http"
 import fs = require("fs")
-import { Event, createDB } from "./repository" 
+import { Event, addTag, createDB, deleteTag, eventTagOff, eventTagOn, getAllEventTags } from "./repository" 
 import express = require("express")
 import { addEvent, countEvent, deleteEvent, editEvent, getAllDB, getAllEvents, getAllTags } from "./repository"
 import { ImageUploader } from "./mutler"
+import { OkPacket } from "mysql2"
 const clientPath = `${__dirname}/../public`
 // const firstpage = fs.readFileSync(clientPath+"/index.html", "utf8")
 
@@ -43,8 +44,9 @@ app.get("/db/:id/events", async function (req: any, res: any) {
 app.get("/db/:id/tags", async function (req: any, res: any) {
 	let id = req.params.id
 	const row = await getAllTags(id)
+	const eventtags = await getAllEventTags(id)
     if (!row) res.status(500).end()
-	res.status(200).json({ items: row })
+	res.status(200).json({ items: row ,eventtags:eventtags})
 })
 
 app.post("/db/:id/event", ImageUploader.upload.single("img"),ImageUploader.resizeImg,async function (req: any, res: any) {
@@ -65,6 +67,36 @@ app.post("/db/event/:id/delete", async function (req: any, res: any) {
     if (!result) res.status(500).end()
 	res.status(200).end()
 })
+app.post("/db/:id/tag/delete", async function (req: any, res: any) {
+	let dbid = req.params.id
+	console.log(req.body)
+    const result =await deleteTag(dbid,req.body.id)
+    if (!result) res.status(500).end()
+	res.status(200).end()
+})
+app.post("/db/:id/tag/add", async function (req: any, res: any) {
+	let dbid = req.params.id
+	console.log(req.body)
+    const result=await addTag(dbid,req.body.name,req.body.color)
+	console.log(result)
+    if (!result || result.affectedRows===0) res.status(500).end()
+	else res.status(200).json({id:result.insertId}).end()
+})
+app.post("/db/:id/tag/event/on", async function (req: any, res: any) {
+	let dbid = req.params.id
+	console.log(req.body)
+    const result =await eventTagOn(dbid,req.body.event,req.body.tag)
+    if (!result) res.status(500).end()
+	res.status(200).end()
+})
+app.post("/db/:id/tag/event/off", async function (req: any, res: any) {
+	let dbid = req.params.id
+	console.log(req.body)
+    const result =await eventTagOff(dbid,req.body.event,req.body.tag)
+    if (!result) res.status(500).end()
+	res.status(200).end()
+})
+
 
 app.post("/db/event/:id/edit", ImageUploader.upload.single("img"),ImageUploader.resizeImg, async function (req: any, res: any) {
 	let id = req.params.id

@@ -3,14 +3,14 @@ async function Album() {
 	DB.view = VIEW.Album
 	$("#album-container").html("")
     $("#album-loading").show()
-	await loadData()
+	await DatabaseStub.loadData()
     
 	window.scrollTo(0, 0)
 	let html=""
 	for (const item of DB.data) {
 
         html+=`<div class="album-item" data-id=${item.counter}>`
-        if(item.thumbnail){
+        if(item.thumbnail && !Database.IsLocal){
             html+=`
             <div class="card-img-top">
                 <img class="card-thumbnail" src="./uploads/${item.thumbnail}" alt="image">

@@ -1,13 +1,56 @@
+console.log(hexId(10))
 
 $("document").ready(function () {
 	let query = new URLSearchParams(window.location.search)
 	let id = query.get("db")
-
 	
 
+	if(Database.IsLocal){
+		$(".hide-on-local").remove()
+		document.title="ChronoDB Offline"
+	}
 	if (!id) {
         $(".nav-item").hide()
-		dbList()
+		DatabaseStub.dbList()
+		$("#upload-data").change(function(){
+			try {
+				let files  = document.getElementById('upload-data').files
+				if (!files.length) {
+					return;
+				}
+				let file = files[0];
+				let reader = new FileReader();
+				const self = this;
+				reader.onload = (event) => {
+					uploadData(event.target.result)
+				};
+				reader.readAsText(file);
+			} catch (err) {
+				console.error(err);
+			}
+		})
+		$("#submit-create-db").click(function(){
+			createDatabase()
+		})
+		// $("#upload-data").change(function(evt) {
+		// 	try {
+		// 		let files = evt.target.files;
+		// 		if (!files.length) {
+		// 			alert('No file selected!');
+		// 			return;
+		// 		}
+		// 		let file = files[0];
+		// 		let reader = new FileReader();
+		// 		const self = this;
+		// 		reader.onload = (event) => {
+		// 			uploadData(event.target.result)
+		// 		};
+		// 		reader.readAsText(file);
+		// 	} catch (err) {
+		// 		console.error(err);
+		// 	}
+		// });
+
 		return
 	}
 	else{
@@ -36,8 +79,14 @@ $("document").ready(function () {
 		},
 	})
 
-	
-	
+	$("#post-close-btn").click(closePost)
+	$("#edit-close-btn").click(closeEdit)
+	$("#tag-close-btn").click(function(){
+		$("#tagwindow").addClass("hidden")
+		$("#shadow-post").addClass("hidden")
+
+	})
+
 	document.querySelector("emoji-picker").addEventListener("emoji-click", (event) => {
 		$("#pickemoji").html(event.detail.unicode)
 		$("#pickemoji").data("emoji", event.detail.unicode)
@@ -70,24 +119,12 @@ $("document").ready(function () {
 	})
 	$("#shadow-post").click(function (e) {
 		closePost()
-	})
+		$("#tagwindow").addClass("hidden")
 
-	let str = "<div data-color='rand' class='dropdown-item color-item'><img src='shuffle.svg'></div>"
-	let tags = ""
-	for (let i = 0; i < COLORS_LIGHT.length; ++i) {
-		str += `<div data-color=${i} class="dropdown-item color-item"><span class="color-selection-span" style="background:${COLORS_LIGHT[i]};"></span></div>`
-		// tags+=`<div class="tag-selection selected" data-id=1 data-color=${i} style="background:${COLORS_LIGHT[i]};"><img src="check.png">tag-${i}</div>`
-	}
-	$("#color-selection").html(str)
-	$(".dropdown-item").click(function () {
-		let col = $(this).data("color")
-		if (col === "rand") {
-			col = Math.floor(Math.random() * COLORS_LIGHT.length)
-		}
-		$("#color-selection").data("color", col)
-		$(".ql-toolbar").css("background", COLORS_LIGHT[Number(col)])
-		$("#color-selection-current").css("background", COLORS_LIGHT[Number(col)])
 	})
+	initColorSelection()
+
+
 	//  $("#tagarea").html(tags)
 
 	$("#importance-range").on("input change", function () {
@@ -124,6 +161,20 @@ $("document").ready(function () {
 		$(this).val("")
 	})
 
+	$(".groupby-btn").click(function(){
+		if(DB.view!==VIEW.Board) return
+		$(".groupby-btn").removeClass("active")
+		$(this).addClass("active")
+		BoardState.GroupBy=$(this).data("val")
+		Board()
+	})
+	$(".orderby-btn").click(function(){
+		if(DB.view!==VIEW.Board) return
+		$(".orderby-btn").removeClass("active")
+		$(this).addClass("active")
+		BoardState.OrderBy=Number($(this).data("val"))
+		Board()
+	})
 	const inputImage = document.getElementById("input-image")
 	inputImage.addEventListener("change", (e) => {
 		let input = e.target
@@ -139,18 +190,39 @@ $("document").ready(function () {
 			reader.readAsDataURL(input.files[0])
 		}
 	})
-	$(".groupby-btn").click(function(){
-		if(DB.view!==VIEW.Board) return
-		$(".groupby-btn").removeClass("active")
-		$(this).addClass("active")
-		BoardState.GroupBy=$(this).data("val")
-		Board()
-	})
-	$(".orderby-btn").click(function(){
-		if(DB.view!==VIEW.Board) return
-		$(".orderby-btn").removeClass("active")
-		$(this).addClass("active")
-		BoardState.OrderBy=Number($(this).data("val"))
-		Board()
-	})
+	
 })
+
+function initColorSelection(){
+
+	let str = "<div data-color='rand' class='dropdown-item color-item'><img src='shuffle.svg'></div>"
+	let tagstr="<div data-color='rand' class='tag-dropdown-item color-item'><img src='shuffle.svg'></div>"
+	let tags = ""
+	for (let i = 0; i < COLORS_LIGHT.length; ++i) {
+		str += `<div data-color=${i} class="dropdown-item color-item"><span class="color-selection-span" style="background:${COLORS_LIGHT[i]};"></span></div>`
+		// tags+=`<div class="tag-selection selected" data-id=1 data-color=${i} style="background:${COLORS_LIGHT[i]};"><img src="check.png">tag-${i}</div>`
+		tagstr += `<div data-color=${i} class="tag-dropdown-item color-item"><span class="color-selection-span" style="background:${COLORS_MID[i]};"></span></div>`
+
+	}
+	$("#color-selection").html(str)
+	$("#tag-color-selection").html(tagstr)
+	$(".dropdown-item").click(function () {
+		let col = $(this).data("color")
+		if (col === "rand") {
+			col = Math.floor(Math.random() * COLORS_LIGHT.length)
+		}
+		$("#color-selection").data("color", col)
+		$(".ql-toolbar").css("background", COLORS_LIGHT[Number(col)])
+		$("#color-selection-current").css("background", COLORS_LIGHT[Number(col)])
+	})
+	$(".tag-dropdown-item").click(function () {
+		let col = $(this).data("color")
+		if (col === "rand") {
+			col = Math.floor(Math.random() * COLORS_LIGHT.length)
+		}
+		$("#tag-color-selection").data("color", col)
+		$("#tagnameinput").css("background", COLORS_MID[Number(col)])
+		$("#tag-color-selection-current").css("background", COLORS_MID[Number(col)])
+	})
+
+}

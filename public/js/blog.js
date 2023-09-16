@@ -22,7 +22,8 @@ function getBlogPost(item,index)
 		</div>
 		<div class="blog-header">
 			<h1>${item.eventname}</h1>
-			<b class="blog-header-date">${date}</b>
+			<b class="blog-header-date">${date}</b><br>
+			${allTags(item.tags)}
 			<hr>
 			<div class="blog-header-btns">
 				<img src="edit.svg" class='blog-edit' data-id=${item.counter} title="edit event">
@@ -57,7 +58,7 @@ function populatePostContent(item,index){
 		blogquill.enable(false);
 	}
 	
-	if(item.thumbnail){
+	if(item.thumbnail && !Database.IsLocal){
 		$(`#blog-post-${index} .ql-editor`).prepend(`<img class='blog-img' src="uploads/${item.thumbnail}" data-src="uploads/${item.thumbnail}">`)
 	}
 }
@@ -70,7 +71,7 @@ function addPostBtnEvent(){
 	})
 	$(".blog-delete").click(function(){
 		if (confirm('Delete "' + $(this).data("name") + '"?')) {
-			deleteItem($(this).data("id"),true)
+			DatabaseStub.deleteItem($(this).data("id"),true)
 		} 
 	})
 }
@@ -79,7 +80,7 @@ async function Blog(){
     
 	$("#blog-loading").show()
 	DB.view = VIEW.Blog
-	await loadData()
+	await DatabaseStub.loadData()
 	$("#blog-loading").hide()
 	let html=``
 	for(const [i,item] of DB.data.entries()){
