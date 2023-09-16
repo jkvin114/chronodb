@@ -175,6 +175,15 @@ $("document").ready(function () {
 		BoardState.OrderBy=Number($(this).data("val"))
 		Board()
 	})
+	$(".trend-groupby-btn").click(function(){
+		if(DB.view!==VIEW.Trend) return
+		$(".trend-groupby-btn").removeClass("active")
+		$(this).addClass("active")
+		TrendState.GroupBy=$(this).data("val")
+		TrendView()
+		
+	})
+
 	const inputImage = document.getElementById("input-image")
 	inputImage.addEventListener("change", (e) => {
 		let input = e.target

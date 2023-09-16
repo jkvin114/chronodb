@@ -32,6 +32,8 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
   <link href="styles/index.css" rel="stylesheet"/>
   <!-- https://quilljs.com/docs/quickstart/ -->
   <!-- https://atomiks.github.io/tippyjs/v6/getting-started -->
@@ -79,6 +81,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           </li>
           <li class="nav-item view-nav"  data-view="list">
             <a class="nav-link">List</a>
+          </li>
+          <li class="nav-item view-nav"  data-view="trend">
+            <a class="nav-link">Trend</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" onclick="openEdit()" title="create event"><img src="edit.svg"></a>
@@ -369,7 +374,21 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 
     </div>
   </section>
-  
+  <section id="section-trend" class="hidden section container">
+    <div class="board-toolbar-section">
+      <img src="home.svg" class="trend-groupby-btn invert-color active" data-val="none" title="all"> 
+      <img src="palette.png" class="trend-groupby-btn" data-val="color" title="group by color"> 
+      <img src="tag.png" class="trend-groupby-btn" data-val="tag" title="group by tags"> 
+
+    </div>
+    <div id="trend-container">
+      <div id="trend-chartdiv" style="width: 100%;height: 500px;"></div>
+
+    </div>
+    <div id="trend-loading">
+
+    </div>
+  </section>
   <div id="emojiwindow" class="hidden">
     <img src="x.svg" id="close-emoji" class="emoji-window-btn"> 
     <img src="trash.svg" id="remove-emoji" class="emoji-window-btn"> 
@@ -530,6 +549,6 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
 <script src="js/blog.js"></script>
 <script src="js/list.js"></script>
 <script src="js/board.js"></script>
-
+<script src="js/trend.js"></script>
 
 </html>

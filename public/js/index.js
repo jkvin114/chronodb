@@ -6,6 +6,7 @@ const VIEW = {
 	Blog: "blog",
 	Gallery: "gallery",
 	List: "list",
+	Trend:"trend"
 }
 
 class Database {
@@ -225,6 +226,9 @@ function changeView(view) {
 			break
 		case "list":
 			ListView()
+			break
+		case "trend":
+			TrendView()
 			break
 	}
 }

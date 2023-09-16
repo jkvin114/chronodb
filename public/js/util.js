@@ -17,6 +17,12 @@ function getYear(item){
 function hexId(){
     return Math.floor(Date.now()+Math.random()*1000000).toString(16).padEnd(10, "0")
 }
+function getMidTime(item){
+    if(!item.eventend)
+        return new Date(item.eventstart).valueOf()
+
+    return (new Date(item.eventstart).valueOf() + new Date(item.eventend).valueOf())/2
+}
 
 function getDBListItem(id,title,description,count){
     return `
