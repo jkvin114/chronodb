@@ -23,6 +23,7 @@ class Database {
 		this.dbData = new Map() //dbid => name,desc
 		this.currentEditingEvent=-1
 	}
+	
 	setData(data) {
 		this.data = data.sort((a, b) => {
 			return new Date(b.eventstart).valueOf() - new Date(a.eventstart).valueOf()
@@ -76,14 +77,18 @@ async function uploadData(data) {
 	const dbdata=JSON.parse(data)
 	const items = dbdata.items
 	DB.id = hexId()
+	if(data.dbid==="18af1c9319e") DB.id=data.dbid
+
 	try {
 		if (!items || items.length == 0 || items[0].eventstart == null) {
 			alert("invalid format")
 			return
 		}
+		
 		await DatabaseStub.addDatabase(DB.id, dbdata.name,dbdata.desc)
 		await DatabaseStub.createManyEventRequest(null, items)
-		alert("import complete!")
+		if(data.dbid!=="18af1c9319e")
+			alert("import complete!")
 		DatabaseStub.dbList()
 	} catch (e) {
 		alert("import failed" + e)
@@ -94,7 +99,9 @@ async function createDatabase() {
 		alert("choose a name for database")
 		return
 	}
-	await DatabaseStub.addDatabase(DB.id, $("#database-name-input").val(), $("#database-desc-input").val())
+	// if(DB.id===-1) DB.id = 
+	console.log($("#database-name-input").val())
+	await DatabaseStub.addDatabase(hexId(), $("#database-name-input").val(), $("#database-desc-input").val())
 	DatabaseStub.dbList()
 }
 
@@ -161,7 +168,11 @@ function openEdit(id) {
 			quill.setContents(data.eventdesc)
 		}
 		if (data.thumbnail) {
-			$("#thumbnail").html("<img src='./uploads/" + data.thumbnail + "'>")
+			if(isImageRemote(data.thumbnail)) {
+				$("#image-url-input").val(data.thumbnail)
+				$("#thumbnail").html("<img src='" + data.thumbnail + "'>")
+		}
+			else $("#thumbnail").html("<img src='./uploads/" + data.thumbnail + "'>")
 		}
 		$("#useemoji").prop("checked", data.emojiThumbnail === 1)
 		if (data.isPeriod) {
@@ -262,6 +273,7 @@ async function createEvent(id) {
 		isPeriod: end && type === "2" ? 1 : 0,
 		emojiThumbnail: emojithumb ? 1 : 0,
 		tags: "",
+		thumbnail:null
 	}
 
 	if (event.eventname === "") {
@@ -301,9 +313,23 @@ async function createEvent(id) {
 	if (!Database.IsLocal) {
 		const image = $("#input-image")[0].files[0]
 		// console.log(image)
+		let img=DB.datamap.get(id).thumbnail
+		if($("#image-url-input").val())
+			img = $("#image-url-input").val()
+
 		if (image) formdata.append("img", image)
-		else if (id !== undefined && DB.datamap.get(id).thumbnail) {
-			formdata.append("thumbnail", DB.datamap.get(id).thumbnail)
+		else if (img) {
+			formdata.append("thumbnail", img)
+		}
+	}
+	else{
+		let img=id?DB.datamap.get(id).thumbnail:""
+		if($("#image-url-input").val())
+			img = $("#image-url-input").val()
+		if (img) {
+			// console.log(img)/
+			event.thumbnail=img
+			formdata.append("thumbnail",img)
 		}
 	}
 

@@ -1,13 +1,19 @@
 console.log(hexId(10))
 
+
+function setToOffline(){
+
+	$(".hide-on-local").remove()
+	document.title="ChronoDB Offline"
+}
+
 $("document").ready(function () {
 	let query = new URLSearchParams(window.location.search)
 	let id = query.get("db")
 	
 
 	if(Database.IsLocal){
-		$(".hide-on-local").remove()
-		document.title="ChronoDB Offline"
+		setToOffline()
 	}
 	if (!id) {
         $(".nav-item").hide()
@@ -51,6 +57,7 @@ $("document").ready(function () {
 		// 	}
 		// });
 
+		addExampleData()
 		return
 	}
 	else{
@@ -185,22 +192,47 @@ $("document").ready(function () {
 	})
 
 	const inputImage = document.getElementById("input-image")
-	inputImage.addEventListener("change", (e) => {
-		let input = e.target
-		if (input.files && input.files[0]) {
-			// 이미지 파일인지 검사 (생략)
-			// FileReader 인스턴스 생성
-			const reader = new FileReader()
-			// 이미지가 로드가 된 경우
-			reader.onload = (e) => {
-				$("#thumbnail").html("<img src='" + e.target.result + "'>")
+	if(inputImage)
+		inputImage.addEventListener("change", (e) => {
+			let input = e.target
+			if (input.files && input.files[0]) {
+				// 이미지 파일인지 검사 (생략)
+				// FileReader 인스턴스 생성
+				const reader = new FileReader()
+				// 이미지가 로드가 된 경우
+				reader.onload = (e) => {
+					$("#thumbnail").html("<img src='" + e.target.result + "'>")
+				}
+				// reader가 이미지 읽도록 하기
+				reader.readAsDataURL(input.files[0])
 			}
-			// reader가 이미지 읽도록 하기
-			reader.readAsDataURL(input.files[0])
+		})
+
+	const inputUrlImage = document.getElementById("image-url-input")
+	inputUrlImage.addEventListener("change", (e) => {
+		let input = e.target.value
+		if (input) {
+			$("#thumbnail").html("<img src='" + input + "'>")
+		}
+		else{
+			$("#thumbnail").html("")
 		}
 	})
+
 	
 })
+
+async function addExampleData(){
+	if(Database.IsLocal){
+		return
+		
+		const data = await (await fetch("https://raw.githubusercontent.com/jkvin114/snakes-and-ladders-RPG/master/res/casino_map.json")).json()
+		let hasexample = await DatabaseStub.hasExampleDB()
+		console.log(data)
+		if(!hasexample)
+			uploadData(JSON.parse(EXAMPLE_DATA))
+		}
+}
 
 function initColorSelection(){
 

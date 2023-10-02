@@ -44,7 +44,10 @@ function populatePostContent(item,index){
 	}
 	if(!isEmpty(item.desctext) && isEmpty(item.eventdesc)){
 		document.getElementById("blog-post-"+index).innerHTML=`<p style="padding:10px;">${item.desctext}</p>`
-		return
+		console.log(item.desctext)
+		if(item.thumbnail){
+			$(`#blog-post-${index}`).prepend(`<img class='blog-img' src="${getImgSrc(item.thumbnail)}" data-src="${getImgSrc(item.thumbnail)}">`)
+		}
 	}
 	else{
 		const blogquill = new Quill(document.getElementById("blog-post-"+index), {
@@ -56,11 +59,11 @@ function populatePostContent(item,index){
 		})
 		blogquill.setContents(item.eventdesc)
 		blogquill.enable(false);
+		if(item.thumbnail){
+			$(`#blog-post-${index} .ql-editor`).prepend(`<img class='blog-img' src="${getImgSrc(item.thumbnail)}" data-src="${getImgSrc(item.thumbnail)}">`)
+		}
 	}
 	
-	if(item.thumbnail && !Database.IsLocal){
-		$(`#blog-post-${index} .ql-editor`).prepend(`<img class='blog-img' src="uploads/${item.thumbnail}" data-src="uploads/${item.thumbnail}">`)
-	}
 }
 
 function addPostBtnEvent(){

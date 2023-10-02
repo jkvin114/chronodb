@@ -423,6 +423,15 @@ border-bottom: 1px solid #bebebe;
     max-width: 300px;
     margin: 10px;
     display: inline-block;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+.input-container{
+    align-items: center;
+    justify-content: center;
+}
+.input-container .inputitem{
+    text-align: center;
 }
 #shadow,#shadow-post{
     background: rgba(150,150,150,0.4);
@@ -512,20 +521,21 @@ border-bottom: 1px solid #bebebe;
 }
 #thumbnail{
     margin: 4px;
-    max-height: 120px;
-    max-width: 250px;
+    
     overflow: auto;
     cursor: pointer;
 }
 #thumbnail > img{
     /* width: 100%; */
     height: 100%;
+    max-height: 350px;
+    max-width: 350px;
 }
 
 .tag-selection{
     font-size: 13px;
     border-radius: 2px;
-    border: 1px solid #969696;
+    /* border: 1px solid #969696; */
     display: inline;
     height: 27px;
     margin: 5px;
@@ -533,6 +543,7 @@ border-bottom: 1px solid #bebebe;
     background-color: white;
     color: #575757;
     padding: 2px;
+    line-height: 24px;
 }
 .tag-selection > img{
     height: 15px;
@@ -547,6 +558,15 @@ border-bottom: 1px solid #bebebe;
 .tag-selection.selected{
     color: #2a2a2a;
 
+}
+.album-tag{
+    position: absolute;
+    top:5px;
+    left:5px;
+    z-index: 3;
+}
+.album-tag .tag-selection{
+    box-shadow:rgba(85, 85, 85,0.5) 0px 0px 3px 1px;
 }
 #editor{
     height: 250px;
@@ -611,6 +631,7 @@ emoji-picker{
     margin: 5px;
     cursor: pointer;
     transition: all 0.2s;
+    position: relative;
     /* flex-grow: 1; */
 }
 .album-item:hover{
@@ -625,7 +646,7 @@ emoji-picker{
     min-height: 100px;
 }
 .album-item .card-img-top.noimage{
-    padding: 10px;
+    padding: 40px;
     overflow:hidden;
 }
 .noimage li{

@@ -55,7 +55,6 @@ app.post("/db/:id/event", ImageUploader.upload.single("img"),ImageUploader.resiz
 	let id = req.params.id
 	if(imgfile)
 		req.body.thumbnail=imgfile.filename
-
     const result =await addEvent(id,req.body as Event)
     if (!result) return res.status(500).end()
 	return res.status(200).end()

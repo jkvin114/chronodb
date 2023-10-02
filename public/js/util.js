@@ -1,6 +1,6 @@
 function isEmpty(text){
     // console.log(text)
-    if(typeof(text)!=="string") return false
+    if(typeof(text)!=="string") return true
     if(!text) return true
     return text.replace(/\s/g, '').length===0
 }
@@ -33,7 +33,7 @@ function getDBListItem(id,title,description,count){
         </div>
         <small>${description}</small>
       </a>`
-}  
+}
 
 function downloadObjectAsJson(exportObj, exportName){
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
@@ -59,4 +59,12 @@ function allTags(tags){
 		html+=tagHtml(t)
 	}
 	return "<div>"+html+"</div>"
+}
+
+function isImageRemote(imageurl){
+    return (imageurl.slice(0,4) === "http" || imageurl.slice(0,4) === "data")
+}
+function getImgSrc(image){
+    let src=isImageRemote(image) ? image : `./uploads/${image}`
+    return src
 }

@@ -70,7 +70,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           <li class="nav-item view-nav" data-view="album">
             <a class="nav-link">Album</a>
           </li>
-          <li class="nav-item view-nav hide-on-local"  data-view="gallery">
+          <li class="nav-item view-nav"  data-view="gallery">
             <a class="nav-link">Gallery</a>
           </li>
           <li class="nav-item view-nav" data-view="board">
@@ -91,7 +91,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
           <li class="nav-item">
             <a class="nav-link" onclick="exportData()" title="Export data"><img src="download.svg"></a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item hide-on-local">
             <a class="nav-link" onclick="openEditTag()" title="Edit tags"><img src="tag.png"></a>
           </li>
         </ul>
@@ -137,8 +137,6 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   </section>
 
   <section id="section-timeline" class="hidden section">
-    <div id="timeline-container"></div>
-
     <div id="timeline-loading" class="list-group">
       <div class="row w-100">
         <div class="col-1 timeline-loading-item loading-item" style="margin-left: 10%;">
@@ -152,7 +150,6 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         <div class="col-1 timeline-loading-item loading-item" style="margin-left: 25%;">
         </div>
         <div class="col-1 timeline-loading-item loading-item" style="margin-left: 40%;">
-          
         </div>
         <div class="col-1 timeline-loading-item loading-item" style="margin-left: 5%;">
         </div>
@@ -164,6 +161,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         </div>
       </div>
     </div>
+    <div id="timeline-container"></div>
+
+    
     <!-- <button id="saveimg">save as image</button> -->
   </section>
   <section id="section-table" class="hidden section">
@@ -279,7 +279,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
         <img src="palette.png" class="groupby-btn active" data-val="color" title="group by color"> 
         <img src="calendar.svg" class="groupby-btn" data-val="year" title="group by year"> 
         <img src="star.png" class="groupby-btn" data-val="importance" title="group by importance"> 
-        <img src="tag.png" class="groupby-btn" data-val="tag" title="group by tags"> 
+        <img src="tag.png" class="groupby-btn hide-on-local" data-val="tag" title="group by tags"> 
 
       </div>
       <div class="board-toolbar-section">
@@ -378,7 +378,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
     <div class="board-toolbar-section">
       <img src="home.svg" class="trend-groupby-btn invert-color active" data-val="none" title="all"> 
       <img src="palette.png" class="trend-groupby-btn" data-val="color" title="group by color"> 
-      <img src="tag.png" class="trend-groupby-btn" data-val="tag" title="group by tags"> 
+      <img src="tag.png" class="trend-groupby-btn hide-on-local" data-val="tag" title="group by tags"> 
 
     </div>
     <div id="trend-container">
@@ -438,9 +438,9 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
       <div class="inputitem" style="display: inline;">
         <button id="pickemoji"><img src="smile.svg"></button>
       </div>
-      <h2 style="text-align: center;display: inline;font-family: 'nanumEB';" >Add Event</h2>
+      <h2 style="text-align: center;display: inline;font-family: 'nanumEB';vertical-align: text-bottom;" >Add Event</h2>
       
-        <div class="row">
+        <div class="row input-container">
           
           <div class="inputitem">
             <label for="nameinput" class="visually-hidden">Name</label>
@@ -451,7 +451,18 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
             <option id="type-event" value="1"selected>Event</option>
             <option id="type-period" value="2">Period</option>
           </select>
+          <div class="inputitem">
+            
+            <label for="start">Start date:</label>
+            <input name="date" id="startinput"
+                   min="0000-01-01" max="2999-12-31">
+          </div>
+          <div class="inputitem">
   
+            <label for="start">End date:</label>
+            <input name="date" id="endinput"
+                   min="0000-01-01" max="2999-12-31">
+          </div>
           <div class="dropdown inputitem">
             <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <span class="color-selection-span" id="color-selection-current" style="background:white;margin: 1px;"></span>select color
@@ -464,40 +475,32 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
             </ul> -->
           </div>
           
+          
+         
+          <div class="form-check inputitem" >
+            <input class="form-check-input" type="checkbox" value="" id="useemoji" checked>
+            <label class="form-check-label" for="useemoji">
+              Use emoji as timeline thumbnail
+            </label>
+          </div>
+          <div class="inputitem" style="width: 300px;"> 
+            <label for="importance" id="importance-label" class="form-label">Importance:5</label>
+            <input type="range" id="importance-range" class="form-range" min="1" max="10"  id="importance" value="5">
+          </div>
+          <div class="inputitem">
+            <label for="nameinput" class="visually-hidden">Image from URL</label>
+            <input type="text" class="form-control" id="image-url-input" placeholder="Image URL">
+          </div>
           <div class="inputitem hide-on-local" >
             <input type="file"  id="input-image" class="form-control" accept="image/png,image/jpg,image/jpeg" name="img">
-
             <!-- <input class="form-control" type="file" id="formFile"> -->
           </div>
-          <div class="inputitem">
-  
-            <label for="start">Start date:</label>
-            <input name="date" id="startinput"
-                   min="0000-01-01" max="2999-12-31">
-          </div>
-          <div class="inputitem">
-  
-            <label for="start">End date:</label>
-            <input name="date" id="endinput"
-                   min="0000-01-01" max="2999-12-31">
-          </div>
-          
         </div>
   
-        <div class="form-check inputitem hide-on-local" >
-          <input class="form-check-input" type="checkbox" value="" id="useemoji" checked>
-          <label class="form-check-label" for="useemoji">
-            Use emoji thumbnail
-          </label>
-        </div>
-        <div class="inputitem" style="width: 200px;"> 
-          <label for="importance" id="importance-label" class="form-label">Importance:5</label>
-          <input type="range" id="importance-range" class="form-range" min="1" max="10"  id="importance" value="5">
-          
-        </div>
-        <div class="row">
-          <div id="tagarea-container" class="col-12 col-md-4">
-            <div id="tagarea">
+        
+        <div class="row input-container">
+          <div id="tagarea-container hide-on-local" class="col-12 col-md-4">
+            <div id="tagarea ">
               <!-- <div class="tag-selection selected"><img src="check.png">tag1</div>
               <div class="tag-selection"><img src="check.png">tag2</div>
               <div class="tag-selection selected"><img src="check.png">tag3</div> -->
@@ -533,7 +536,7 @@ https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js
   <div id="shadow-post" class="hidden"></div>
 </body>
 <script src="js/util.js"></script>
-
+<script src="example/database_mcu.js"></script>
 <script src="js/localDatabase.js"></script>
 <script src="js/ajax.js"></script>
 <script src="js/index.js"></script>

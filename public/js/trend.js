@@ -1,3 +1,10 @@
+const DAY_MS = 1000 * 3600 * 24
+const IMPORTANCE_POW=1.8
+const BANDWIDTH_MUL=6
+const PADDING_MUL = 2
+const MAX_SAMPLES=200
+
+
 class TrendState {
 	static GroupBy = "none"
     static Chart=null
@@ -5,19 +12,13 @@ class TrendState {
 function GaussKDE(xi, x, std) {
 	return (1 / (Math.sqrt(2 * Math.PI) * std)) * Math.exp(Math.pow((xi - x) / std, 2) / -2)
 }
-const DAY = 1000 * 3600 * 24
-const IMPORTANCE_POW=1.5
-const BANDWIDTH_MUL=7
-const PADDING_MUL = 2
-const MAX_SAMPLES=200
+
 function getSampleDates() {
 	const sortedData = DB.data.filter((item) => !item.isPeriod).toSorted((a, b) => getMidTime(b) - getMidTime(a))
-	const maxItem = sortedData[0]
-	const minItem = sortedData[sortedData.length - 1]
-	const maxtime = getMidTime(maxItem)
-	const mintime = getMidTime(minItem)
+	const maxtime = getMidTime(sortedData[0])
+	const mintime = getMidTime(sortedData[sortedData.length - 1])
 	const span = maxtime - mintime
-	const interval = Math.max(DAY, Math.floor(span / MAX_SAMPLES)) //in MS
+	const interval = Math.max(DAY_MS, Math.floor(span / MAX_SAMPLES)) //in MS
 	const padding = interval * PADDING_MUL
 	let dates = []
 	for (let timeMS = mintime - padding; timeMS < maxtime + padding; timeMS += interval) {
@@ -67,7 +68,23 @@ function getValues() {
             })
         }
 	}
-	return [data, series]
+
+	const keys=series.map(s=>s.key)
+	normalize(data,keys)
+	return [data, series,interval]
+}
+
+function normalize(data,keys){
+	for(const item of data){
+		let total=0
+		for(const key of keys){
+			total += item[key]
+		}
+		for(const key of keys){
+			item[key+"_norm"] = Math.ceil(1000 * item[key] / total) / 10
+		}
+		
+	}
 }
 
 function populateSeries(times, outputData, inputData, key, interval) {
@@ -76,7 +93,7 @@ function populateSeries(times, outputData, inputData, key, interval) {
 		const timeMS = times[i]
 		for (let j = 0; j < inputData.length; ++j) {
 			let kval = GaussKDE(timeMS, getMidTime(inputData[j]), interval * BANDWIDTH_MUL) * inputData[j].importance ** IMPORTANCE_POW
-
+			kval *= 10**9
 			if (!outputData[i][key]) outputData[i][key] = kval
 			else outputData[i][key] += kval
 		}
@@ -95,14 +112,16 @@ async function TrendView() {
 	const chart = root.container.children.push(
 		am5xy.XYChart.new(root, {
 			panY: false,
+			panX:true,
 			wheelY: "zoomX",
 			layout: root.verticalLayout,
-			maxTooltipDistance: 0,
+			maxTooltipDistance: -1,
 		})
 	)
     TrendState.Chart=root
-
-	var [data, seriesInfo] = getValues()
+	
+	
+	var [data, seriesInfo,interval] = getValues()
         
 	var yRenderer = am5xy.AxisRendererY.new(root, {})
 	yRenderer.labels.template.set("visible", false)
@@ -113,16 +132,30 @@ async function TrendView() {
 			renderer: yRenderer,
 		})
 	)
+
+	var xRenderer = am5xy.AxisRendererX.new(root, {
+		minGridDistance: 50,
+	});
+	xRenderer.grid.template.set("location", 0.5);
+	xRenderer.labels.template.setAll({location: 0.5, multiLocation:0.5});
+
+
 	const xAxis = chart.xAxes.push(
 		am5xy.DateAxis.new(root, {
-			baseInterval: { timeUnit: "day", count: 1 },
-			renderer: am5xy.AxisRendererX.new(root, {
-				minGridDistance: 50,
-			}),
+			baseInterval: { timeUnit: "day", count: interval/DAY_MS },
+			renderer: xRenderer,
+			tooltip: am5.Tooltip.new(root, {})
 		})
 	)
 
-	function createSeries(name, field, color) {
+	var cursor = chart.set("cursor",
+	am5xy.XYCursor.new(root, {
+		xAxis: xAxis
+	}));
+
+	cursor.lineY.set("visible", false);
+
+	function createSeries(name, field, color,labelformat) {
 		const series = chart.series.push(
 			am5xy.SmoothedXLineSeries.new(root, {
 				name: name,
@@ -130,14 +163,20 @@ async function TrendView() {
 				yAxis: yAxis,
 				valueYField: field,
 				valueXField: "date",
-				tooltip: am5.Tooltip.new(root, {}),
 				legendLabelText: "{name}",
 				legendRangeLabelText: "{name}",
 				fill: am5.color(COLORS_MID[Number(color)]),
 				stroke: am5.color(COLORS_MID[Number(color)]),
 			})
 		)
+		var tooltip = series.set("tooltip", am5.Tooltip.new(root, {
+			pointerOrientation: "horizontal"
+		}));
 
+		tooltip.label.setAll({
+			//text:"  "
+			text: labelformat
+		});
 		/*
         series.bullets.push(function(){
             am5.Bullet.new(root, {
@@ -149,12 +188,20 @@ async function TrendView() {
                 })
             })
         });*/
-
-		series.strokes.template.set("strokeWidth", 2)
+		//series.strokes.template.set("strokeWidth", 2)
 		series.data.setAll(data)
 	}
+	let labelformat="[bold]{date.formatDate()}[/]"
+	if(TrendState.GroupBy==="none"){
+		labelformat+=`\n[width: 130px]Interest[/] {value}`
+	}
+	else{
+		for (const se of seriesInfo) {
+			labelformat+=`\n[width: 130px]${se.name}[/] {${se.key}_norm}%`
+		}
+	}
 	for (const se of seriesInfo) {
-		createSeries(se.name, se.key, se.color)
+		createSeries(se.name, se.key, se.color,labelformat)
 	}
 
 	let legend = chart.children.push(am5.Legend.new(root, {}))
