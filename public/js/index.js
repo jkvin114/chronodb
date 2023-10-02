@@ -136,7 +136,7 @@ function openEdit(id) {
 	$("#pickemoji").html('<img src="smile.svg">')
 	$("#pickemoji").data("emoji", null)
 	$("#preview-emoji").html("")
-
+	$("#image-url-input").html("")
 	if (id !== undefined) {
 		DB.currentEditingEvent=id
 		$("#editwindow h2").html("Edit Event")
