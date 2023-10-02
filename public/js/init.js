@@ -224,13 +224,13 @@ $("document").ready(function () {
 
 async function addExampleData(){
 	if(Database.IsLocal){
-		return
 		
-		const data = await (await fetch("https://raw.githubusercontent.com/jkvin114/snakes-and-ladders-RPG/master/res/casino_map.json")).json()
+		
+		const data = await (await fetch("https://raw.githubusercontent.com/jkvin114/chronodb/main/public/example/database_mcu.json")).json()
 		let hasexample = await DatabaseStub.hasExampleDB()
-		console.log(data)
+		console.log(hasexample)
 		if(!hasexample)
-			uploadData(JSON.parse(EXAMPLE_DATA))
+			uploadData(JSON.stringify(data))
 		}
 }
 

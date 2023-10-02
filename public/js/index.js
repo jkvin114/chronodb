@@ -77,7 +77,8 @@ async function uploadData(data) {
 	const dbdata=JSON.parse(data)
 	const items = dbdata.items
 	DB.id = hexId()
-	if(data.dbid==="18af1c9319e") DB.id=data.dbid
+	console.log(data.dbid)
+	if(items[0].dbid==="18af1c9319e") DB.id=items[0].dbid
 
 	try {
 		if (!items || items.length == 0 || items[0].eventstart == null) {
@@ -87,7 +88,7 @@ async function uploadData(data) {
 		
 		await DatabaseStub.addDatabase(DB.id, dbdata.name,dbdata.desc)
 		await DatabaseStub.createManyEventRequest(null, items)
-		if(data.dbid!=="18af1c9319e")
+		if(items[0].dbid!=="18af1c9319e")
 			alert("import complete!")
 		DatabaseStub.dbList()
 	} catch (e) {

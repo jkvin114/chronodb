@@ -39,9 +39,9 @@ function addToListToIdxedDB(storename, list) {
 		const objStore = tran.objectStore(storename)
 
 		for (const item of list) {
-			console.log(item)
+			//console.log(item)
 			const request = objStore.add(item) // 저장
-			request.onsuccess = (e) => console.log(e.target.result)
+		//	request.onsuccess = (e) => console.log(e.target.result)
 		}
 	}
 }
@@ -179,6 +179,7 @@ class LocalDatabase {
 
     async addDatabase(id,name,desc,count){
         if(!count) count=0
+		console.log(id)
         return new Promise(async (resolve, reject) => {
 			try {
                 await addToListToIdxedDB("eventdb",[{name:name,desc:desc,count:count,counter:id}])
