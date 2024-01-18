@@ -1,5 +1,22 @@
 body, html {
     font-family:"Pretendard";
+    --col-bg:#1e1e2f;
+	--col-bg-light:hsl(240, 22%, 20%);
+	--col-bg-lighter:hsl(240, 22%, 25%);
+
+	--col-font:rgb(239, 239, 239);
+	--col-font-light:rgb(130, 130, 130);
+
+
+
+    --col-bg:white;
+	--col-bg-light:#ececec;
+	--col-bg-lighter:#d4d4d4;
+
+	--col-font:black;
+	--col-font-light:rgb(85, 85, 85);
+    color: var(--col-font);
+
   }
   .vis-timeline .vis-item.range, .vis-timeline .vis-item.box{
     overflow: visible;
@@ -71,7 +88,7 @@ body, html {
   }
   .vis-timeline .vis-item.vis-box {
     /* border: none; */
-    background-color: rgb(251, 251, 251) ;
+    background-color: #fbfbfb ;
     color: black ;
     font-size: 15px;
     /* border-color: black; */
@@ -244,7 +261,7 @@ background-color: red;
     left: -28px;
     padding: 2px;
     cursor: pointer;
-    background-color: white;
+    background-color: var(--col-bg);
     z-index: 3;
 }
 .edit-item:hover{
@@ -381,7 +398,7 @@ border-bottom: 1px solid #bebebe;
     overflow: auto;
   }
   #imageview img{
-    background-color: white;
+    background-color: var(--col-bg);
     cursor: pointer;
     width: 100%;
     /* max-height: 100%; */
@@ -393,7 +410,7 @@ border-bottom: 1px solid #bebebe;
     bottom:15vh;
     left: 50%;
     transform: translate(-50%);
-    color: white;
+    color: var(--col-bg);
     font-size: 2rem;
     text-shadow:
     -1px -1px 0 #000,
@@ -432,7 +449,7 @@ border-bottom: 1px solid #bebebe;
 }
 #editor-container{
     /* width: 90%; */
-    background: white;
+    background: var(--col-bg);
     margin: 2vw;
 }
 .inputitem{
@@ -476,7 +493,7 @@ border-bottom: 1px solid #bebebe;
     z-index: 10000;
     width: 90%;
     height: 85vh;
-    background-color: white;
+    background-color: var(--col-bg);
     overflow: auto;
     border: 2px solid rgb(167, 167, 167);
 }
@@ -527,7 +544,7 @@ border-bottom: 1px solid #bebebe;
     min-height: 50px;
     border-radius: 20px;
     border: 2px solid #969696;
-    background: white;
+    background: var(--col-bg);
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -556,7 +573,7 @@ border-bottom: 1px solid #bebebe;
     height: 27px;
     margin: 5px;
     cursor: pointer;
-    background-color: white;
+    background-color: var(--col-bg);
     color: #575757;
     padding: 2px;
     line-height: 24px;
@@ -600,7 +617,7 @@ emoji-picker{
     width: 30px;
     font-size: 17px;
     height: 30px;
-    background-color: white;
+    background-color: var(--col-bg);
     padding: 3px;
     cursor: pointer;
     margin-left: 3px;
@@ -640,7 +657,8 @@ emoji-picker{
 .album-item{
     /* min-width: 150px; */
     /* width: clamp(150px,25vw,250px); */
-    
+    background-color: var(--col-bg-light);
+
     width: 300px;
     box-shadow:rgba(85, 85, 85,0.5) 0px 0px 3px 1px;
     border-radius: 2px;
@@ -648,10 +666,11 @@ emoji-picker{
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
+    color: black;
     /* flex-grow: 1; */
 }
 .album-item:hover{
-    background-color: #e9e9e9;
+    background-color: var(--col-bg-lighter);
 }
 .album-item:hover .album-item-name{
     text-decoration: underline;
@@ -662,12 +681,14 @@ emoji-picker{
     min-height: 100px;
 }
 .album-item .card-img-top.noimage{
-    padding: 40px;
+    padding: 15px;
+    padding-top: 25px;
     overflow:hidden;
 }
 .noimage li{
     word-break: break-all;
     font-size: 12px;
+    color: var(--col-font);
 }
 
 .album-item .card-thumbnail{
@@ -714,10 +735,11 @@ emoji-picker{
 /* Blog======================================== */
 .blog-post{
     margin-bottom: 30px;
+    background: var(--col-bg);
 }
 .blog-post .ql-editor{
     width: 100%;
-    background: white;
+    background: var(--col-bg);
     font-size: 1rem;
     border: none;
 }
@@ -741,7 +763,7 @@ emoji-picker{
     }
 }
 .blog-content{
-    background: white;
+    background: var(--col-bg);
 
     min-height: 200px;
     display: flex;
@@ -757,7 +779,7 @@ emoji-picker{
    font-size: 0.9rem;
 }
 .blog-header{
-    background: white;
+    background: var(--col-bg);
     padding: 15px;
     padding-top: 40px;
     position: relative;
@@ -806,19 +828,19 @@ emoji-picker{
 }
 .blog-header-date{
     font-size: 0.8rem;
-    color: #434343;
+    color: var(--col-font-light);
 }
 .blog-header-btns img:hover{
     opacity: 1;
 }
 #list-container{
-    background-color: white;
+    background-color: var(--col-bg);
     padding: 10px;
     padding-left: 3vw;
 }
 #list-container li.desc{
     font-size: 0.8rem;
-    color: #2f2f2f;
+    color: var(--col-font);
     list-style-type: circle;
 
 }
@@ -839,7 +861,7 @@ emoji-picker{
     z-index: 10000;
     width: 90%;
     height: 85vh;
-    background-color: white;
+    background-color: var(--col-bg);
     overflow: auto;
     border: 2px solid rgb(167, 167, 167);
 }
@@ -862,7 +884,7 @@ emoji-picker{
 }
 .board-area-header{
     height: 30px;
-    background-color: #dedcdc;
+    background-color: var(--col-bg-light);
     padding-left: 20px;
     line-height: 30px;
     box-shadow: rgba(85, 85, 85,0.5) 0px 0px 3px 1px;
@@ -894,7 +916,7 @@ emoji-picker{
     justify-content: flex-start;
     align-content: flex-start;
     align-items: flex-start;
-    background-color: #ededed;
+    background-color: var(--col-bg-light);
     height: 100%;
 }
 .board-item{
@@ -912,6 +934,7 @@ emoji-picker{
     cursor: pointer;
     word-break: break-all;
     font-size: 0.9rem;
+    color: black;
     background:linear-gradient(to left,transparent 0% ,rgba(255, 255, 255, 0.4) 50%,transparent 100%),linear-gradient(to right,#ffe082 0%,#ffe082 100%);
 }
 @media (max-width: 800px) {
@@ -1020,8 +1043,51 @@ cursor: pointer;}
 footer{
     box-shadow: 0 50vh 0 50vh rgba(0, 0, 0, .1);
     background-color: rgba(0, 0, 0, .1);
+
     padding: 30px;
 }
 .show-on-local{
     display: none;
+}
+.yt-player-container{
+    
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    
+}
+.yt-player-container.small{
+    width: 60px;
+    height: 60px;
+}
+#yt-widget{
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 10003;
+}
+#yt-widget > img{
+    background: white;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    margin: -1px;
+}
+#yt-widget > img:hover{
+    
+    background: gray;
+}
+#yt-search{
+    cursor: pointer;
+}
+#yt-thumbnail > img{
+    width: 250px;
+}
+.play-yt-bgm{
+    background-color: rgb(194, 31, 194);
+    border-radius: 5px;
+    margin: 10px;
+}
+.play-yt-bgm:hover{
+    transform: scale(1.1);
 }

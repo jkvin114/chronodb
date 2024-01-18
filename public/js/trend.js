@@ -39,7 +39,7 @@ function getValues() {
 	if (TrendState.GroupBy === "none") {
 		populateSeries(dates, data, inputData, "value", interval)
 		series.push({
-			name: "Interest",
+			name: "Interest over time",
 			key: "value",
 			color: 4,
 		})

@@ -194,8 +194,8 @@ function timestamp() {
 }
 export function addEvent(dbid: number, event: Event) {
 	const queryString =
-		"INSERT INTO event (eventname,eventdesc,eventstart,eventend,emoji,thumbnail,color,isPeriod,tags,importance,dbid,createdAt,updatedAt,desctext,emojiThumbnail) " +
-		"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
+		"INSERT INTO event (eventname,eventdesc,eventstart,eventend,emoji,thumbnail,color,isPeriod,tags,importance,dbid,createdAt,updatedAt,desctext,emojiThumbnail,videoId) " +
+		"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
 
 	return new Promise((resolve) => {
 		db.query(
@@ -215,7 +215,8 @@ export function addEvent(dbid: number, event: Event) {
 				timestamp(),
 				timestamp(),
 				event.desctext,
-				event.emojiThumbnail
+				event.emojiThumbnail,
+				event.videoId
 			],
 			(err, result) => {
 				if (err) {
@@ -230,13 +231,14 @@ export function addEvent(dbid: number, event: Event) {
 }
 export function editEvent(id: number, event: Event) {
 	const queryString =
-		"UPDATE event SET emojiThumbnail = ?, eventname = ?,eventdesc = ?,eventstart = ?,eventend = ?,emoji = ?,thumbnail = ?,color = ?,isPeriod = ?,tags = ?,importance = ?,updatedAt = ?,desctext = ? " +
+		"UPDATE event SET  videoId = ?, emojiThumbnail = ?, eventname = ?,eventdesc = ?,eventstart = ?,eventend = ?,emoji = ?,thumbnail = ?,color = ?,isPeriod = ?,tags = ?,importance = ?,updatedAt = ?,desctext = ? " +
 		"WHERE (counter = ?);"
 
 	return new Promise((resolve) => {
 		db.query(
 			queryString,
 			[
+				event.videoId,
 				event.emojiThumbnail,
 				event.eventname,
 				event.eventdesc,
@@ -289,4 +291,5 @@ export interface Event {
 	importance?: number
 	desctext: string
 	emojiThumbnail:number
+	videoId?:string
 }
